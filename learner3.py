@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import Levenshtein
 import examples
-from itertools import permutations
+from itertools import permutations, chain
 
 # how to deal with the (a-b) version?
 #
@@ -47,7 +47,14 @@ if __name__ == "__main__":
     #ScoredTransform = namedtuple('ScoredTransform', ['operation', 'original', 'transformed', 'goal', 'distance'])
     ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'average_distance'])
     examples_to_learn_from = EXAMPLES
-    perms = list(permutations(TRANSFORMS, len(TRANSFORMS)))
+
+    # make 1 to full-length list of all permutations
+    #perms = list(permutations(TRANSFORMS, len(TRANSFORMS)))  # just do full-length permutations
+    perms=[]
+    l2 = list(chain(permutations(TRANSFORMS, rng)) for rng in range(1, len(TRANSFORMS)+1))
+    for item in l2:
+      perms += item
+
     # for each permutation of the possible transformations
     operation_distances = np.zeros((len(examples_to_learn_from), len(TRANSFORMS)))
     distances_and_sequences = []
