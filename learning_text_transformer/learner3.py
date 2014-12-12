@@ -11,7 +11,6 @@ from transforms import TransformExtractNumber, TransformExpandK, TransformRemove
 
 # how to deal with the (a-b) version?
 #
-# needs unittests for each transform!
 # can we specify types in the final version? e.g. transform to an int?
 # may be want to represent tokenised items as nodes so e.g. order could be
 # messed with?

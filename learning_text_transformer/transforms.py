@@ -2,6 +2,9 @@ import abc
 import re
 
 
+# expandk should work on lowercase k e.g. 30k too?
+#
+
 class Transform(abc.ABC):
     @abc.abstractmethod
     def apply(self, s):

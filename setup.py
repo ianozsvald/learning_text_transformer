@@ -10,7 +10,7 @@ setup(
     url='https://github.com/ianozsvald/',
     license='MIT',
     #packages=['company_database_builder', 'company_database_builder/tests', 'company_database_builder/config'],
-    packages=['engine', 'engine/tests']
+    packages=['learning_text_transformer'],
     include_package_data=True,
     zip_safe=False,
     install_requires=[],
