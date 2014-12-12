@@ -1,6 +1,8 @@
 import re
 from pprint import pprint
 from collections import namedtuple
+import csv
+import argparse
 import pandas as pd
 import numpy as np
 import Levenshtein
@@ -14,10 +16,6 @@ from itertools import permutations, chain
 # may be want to represent tokenised items as nodes so e.g. order could be
 # messed with?
 
-
-#def transform_noop(s):
-    #"""do nothing operation"""
-    #return s
 
 
 def transform_extract_number(s):
@@ -44,9 +42,20 @@ TRANSFORMS = [transform_extract_number, transform_expand_k, transform_remove_dot
 pd.set_option('display.expand_frame_repr', False)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Project description')
+    parser.add_argument('input_file', type=str, help='CSV file of mappings to learn')
+    args = parser.parse_args()
+
+    with open(args.input_file) as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        assert header==["From", "To"]
+        examples_to_learn_from = [l for l in reader]
+
     #ScoredTransform = namedtuple('ScoredTransform', ['operation', 'original', 'transformed', 'goal', 'distance'])
     ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'average_distance'])
-    examples_to_learn_from = EXAMPLES
+    #examples_to_learn_from = EXAMPLES
+    #assert examples_to_learn_from == lines
 
     # make 1 to full-length list of all permutations
     #perms = list(permutations(TRANSFORMS, len(TRANSFORMS)))  # just do full-length permutations
