@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import Levenshtein
 from itertools import permutations, chain
-from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00
+from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers
 
 # how to deal with the (a-b) version?
 #
@@ -16,7 +16,10 @@ from transforms import TransformExtractNumber, TransformExpandK, TransformRemove
 # messed with?
 
 
-TRANSFORMS = [TransformExtractNumber(), TransformExpandK(), TransformRemoveDot00()]
+TRANSFORMS = [TransformExtractNumber(),
+              TransformExpandK(),
+              TransformRemoveDot00(),
+              TransformSpokenWordsToNumbers()]
 
 # make it print wide!
 pd.set_option('display.expand_frame_repr', False)
