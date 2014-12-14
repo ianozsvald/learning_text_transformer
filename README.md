@@ -15,6 +15,9 @@ To add:
     * lowercase/uppercase all
     * remove suffix words
 
+    * can we specify types in the final version? e.g. transform to an int?
+    * may be want to represent tokenised items as nodes so e.g. order could be messed with?
+
 Possibly useful libraries:
 
     * http://txt2re.com/  make regexes semi-automatically

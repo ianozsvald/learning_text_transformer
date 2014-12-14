@@ -9,12 +9,9 @@ import Levenshtein
 from itertools import permutations, chain
 from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers, TransformLowercase, TransformStrip, TransformRemoveWords
 
-# how to deal with the (a-b) version?
-#
-# can we specify types in the final version? e.g. transform to an int?
-# may be want to represent tokenised items as nodes so e.g. order could be
-# messed with?
 
+# build this list automatically
+#issubclass(transforms.TransformExpandK, transforms.Transform)
 
 TRANSFORMS = [TransformExtractNumber(),
               TransformExpandK(),
@@ -54,6 +51,7 @@ if __name__ == "__main__":
     # for each permutation of the possible transformations
     operation_distances = np.zeros((len(examples_to_learn_from), len(TRANSFORMS)))
     distances_and_sequences = []
+    print("Working on {} permutations".format(len(perms)))
     for transform_permutation in perms:
         if verbose:
             print(transform_permutation)

@@ -5,7 +5,8 @@ from learning_text_transformer import spoken_word_to_number
 
 # expandk should work on lowercase k e.g. 30k too?
 # TransformExtractNumber should extract multiple numbers!
-# TransformRemoveWords needs to be hardcoded with a list of terms
+# TransformRemoveWords needs to be hardcoded with a list of terms, should learn
+# terms from input text
 
 class Transform(abc.ABC):
     @abc.abstractmethod
@@ -55,7 +56,6 @@ class TransformStrip(Transform):
 class TransformRemoveWords(Transform):
     def __init__(self, terms):
         self.terms = terms
-        #self.terms = ["Ltd", "ltd", "Limited", "limited"]
 
     def apply(self, s):
         for term in self.terms:
