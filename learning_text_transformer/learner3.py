@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import Levenshtein
 from itertools import permutations, chain
-from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers
+from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers, TransformLowercase, TransformStrip, TransformRemoveWords
 
 # how to deal with the (a-b) version?
 #
@@ -19,7 +19,10 @@ from transforms import TransformExtractNumber, TransformExpandK, TransformRemove
 TRANSFORMS = [TransformExtractNumber(),
               TransformExpandK(),
               TransformRemoveDot00(),
-              TransformSpokenWordsToNumbers()]
+              TransformSpokenWordsToNumbers(),
+              TransformLowercase(),
+              TransformStrip(),
+              TransformRemoveWords(terms=["Ltd", "ltd", "Limited", "limited"])]
 
 # make it print wide!
 pd.set_option('display.expand_frame_repr', False)
@@ -40,13 +43,9 @@ if __name__ == "__main__":
         examples_to_learn_from = [l for l in reader]
     print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
 
-    #ScoredTransform = namedtuple('ScoredTransform', ['operation', 'original', 'transformed', 'goal', 'distance'])
     ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'average_distance'])
-    #examples_to_learn_from = EXAMPLES
-    #assert examples_to_learn_from == lines
 
     # make 1 to full-length list of all permutations
-    #perms = list(permutations(TRANSFORMS, len(TRANSFORMS)))  # just do full-length permutations
     perms=[]
     l2 = list(chain(permutations(TRANSFORMS, rng)) for rng in range(1, len(TRANSFORMS)+1))
     for item in l2:
@@ -77,6 +76,9 @@ if __name__ == "__main__":
         pprint(distances_and_sequences)
 
     chosen_transformations = distances_and_sequences[0].transformations
+    best_score = distances_and_sequences[0].average_distance
 
     print("====")
-    print("Final sequence of transforms:", chosen_transformations)
+    print("Final sequence of transforms (score={}):".format(best_score))
+    for chosen_transformation in chosen_transformations:
+        print(chosen_transformation.__class__.__name__)
