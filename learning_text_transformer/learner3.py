@@ -1,4 +1,3 @@
-import re
 from pprint import pprint
 from collections import namedtuple
 import csv
@@ -10,9 +9,6 @@ from itertools import permutations, chain
 from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers, TransformLowercase, TransformStrip, TransformRemoveWords
 
 
-# build this list automatically
-#issubclass(transforms.TransformExpandK, transforms.Transform)
-
 TRANSFORMS = [TransformExtractNumber(),
               TransformExpandK(),
               TransformRemoveDot00(),
@@ -20,6 +16,10 @@ TRANSFORMS = [TransformExtractNumber(),
               TransformLowercase(),
               TransformStrip(),
               TransformRemoveWords(terms=["Ltd", "ltd", "Limited", "limited"])]
+
+#import transforms
+#t2 = transforms.get_transforms(transforms)
+#print(t2)
 
 # make it print wide!
 pd.set_option('display.expand_frame_repr', False)
@@ -77,6 +77,6 @@ if __name__ == "__main__":
     best_score = distances_and_sequences[0].average_distance
 
     print("====")
-    print("Final sequence of transforms (score={}):".format(best_score))
+    print("Final sequence of transforms (cost={}):".format(best_score))
     for chosen_transformation in chosen_transformations:
-        print(chosen_transformation.__class__.__name__)
+        print(chosen_transformation)

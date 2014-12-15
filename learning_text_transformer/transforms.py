@@ -13,6 +13,9 @@ class Transform(abc.ABC):
     def apply(self, s):
         pass
 
+    def __repr__(self):
+        return self.__class__.__name__
+
 
 class TransformExtractNumber(Transform):
     def apply(self, s):
@@ -61,3 +64,21 @@ class TransformRemoveWords(Transform):
         for term in self.terms:
             s = s.replace(term, "")
         return s
+
+    def __repr__(self):
+        return self.__class__.__name__ + "(" + repr(self.terms) + ")"
+
+
+def get_transforms(mod):
+    transforms = []
+    for c in dir(mod):
+        print(c)
+        c = getattr(mod, c)
+        try:
+            if c is Transform:
+                continue
+            if issubclass(c, Transform):
+                transforms.append(c)
+        except TypeError:
+            pass
+    return transforms
