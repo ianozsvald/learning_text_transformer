@@ -13,7 +13,7 @@ class Transform(abc.ABC):
     def apply(self, s):
         pass
 
-    def __repr__(self):
+    def __str__(self):
         return self.__class__.__name__
 
 
@@ -65,7 +65,7 @@ class TransformRemoveWords(Transform):
             s = s.replace(term, "")
         return s
 
-    def __repr__(self):
+    def __str__(self):
         return self.__class__.__name__ + "(" + repr(self.terms) + ")"
 
 
