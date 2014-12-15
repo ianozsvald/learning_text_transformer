@@ -8,12 +8,10 @@
 
 To add:
 
-    * normalise repeated spaces and trim whitespace
+    * remove suffix words (needs to identify its own terms ahead of time)
     * normalise units ml/l, cm/mm/m, inches
-    * convert unicode to ascii
-    * fix bad unicode
     * lowercase/uppercase all
-    * remove suffix words
+    * replace variant dashes to - (partially done with unidecode)
 
     * can we specify types in the final version? e.g. transform to an int?
     * may be want to represent tokenised items as nodes so e.g. order could be messed with?

@@ -1,5 +1,7 @@
 import abc
 import re
+import ftfy
+import unidecode
 from learning_text_transformer import spoken_word_to_number
 
 
@@ -7,6 +9,8 @@ from learning_text_transformer import spoken_word_to_number
 # TransformExtractNumber should extract multiple numbers!
 # TransformRemoveWords needs to be hardcoded with a list of terms, should learn
 # terms from input text
+# spoken words to numbers must allow empty strings
+
 
 class Transform(abc.ABC):
     @abc.abstractmethod
@@ -67,6 +71,16 @@ class TransformRemoveWords(Transform):
 
     def __str__(self):
         return self.__class__.__name__ + "(" + repr(self.terms) + ")"
+
+
+class TransformFTFY(Transform):
+    def apply(self, s):
+        return ftfy.fix_text(s)
+
+
+class TransformUnidecode(Transform):
+    def apply(self, s):
+        return unidecode.unidecode(s)
 
 
 def get_transforms(mod):

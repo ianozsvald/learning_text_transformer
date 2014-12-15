@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import Levenshtein
 from itertools import permutations, chain
-from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers, TransformLowercase, TransformStrip, TransformRemoveWords
+from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers, TransformLowercase, TransformStrip, TransformRemoveWords, TransformFTFY, TransformUnidecode
 
 
 TRANSFORMS = [TransformExtractNumber(),
@@ -15,7 +15,9 @@ TRANSFORMS = [TransformExtractNumber(),
               TransformSpokenWordsToNumbers(),
               TransformLowercase(),
               TransformStrip(),
-              TransformRemoveWords(terms=["Ltd", "ltd", "Limited", "limited"])]
+              TransformRemoveWords(terms=["Ltd", "ltd", "Limited", "limited"]),
+              TransformFTFY(),
+              TransformUnidecode()]
 
 #import transforms
 #t2 = transforms.get_transforms(transforms)
@@ -51,7 +53,7 @@ if __name__ == "__main__":
     # for each permutation of the possible transformations
     operation_distances = np.zeros((len(examples_to_learn_from), len(TRANSFORMS)))
     distances_and_sequences = []
-    print("Working on {} permutations".format(len(perms)))
+    permutations_tested = 0
     for transform_permutation in perms:
         if verbose:
             print(transform_permutation)
@@ -67,6 +69,10 @@ if __name__ == "__main__":
         if verbose:
             print(distances_per_example, average_distance_for_this_sequence)
         distances_and_sequences.append(ScoredTransformation(transform_permutation, average_distance_for_this_sequence))
+        permutations_tested += 1
+        if average_distance_for_this_sequence == 0:
+            break
+    print("Tested {} of {} permutations".format(permutations_tested, len(perms)))
 
     distances_and_sequences.sort(key=lambda x: x.average_distance)
     if verbose:

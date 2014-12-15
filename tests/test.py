@@ -8,7 +8,8 @@ ITEM2 = ("30K", "30000")
 ITEM3 = ("blah 40 blah", "40")
 ITEM4 = ("forty four", "44")
 ITEM5 = ("thirty-three thousand", "33000")
-
+ITEM6 = ("schÃ¶n", "schön")
+ITEM7 = ("société", "societe")
 # spoken word converter breaks on:
 # "forty four hundred" -> "40400"
 
@@ -49,3 +50,16 @@ class TestCase1(unittest.TestCase):
         res = t.apply(ITEM5[0])
         self.assertEqual(res, ITEM5[1])
 
+    def test5(self):
+        t = transforms.TransformFTFY()
+        res = t.apply(ITEM6[0])
+        self.assertEqual(res, ITEM6[1])
+
+        # check for a no-op
+        res = t.apply(ITEM4[0])
+        self.assertEqual(res, ITEM4[0])
+
+    def test6(self):
+        t = transforms.TransformUnidecode()
+        res = t.apply(ITEM7[0])
+        self.assertEqual(res, ITEM7[1])
