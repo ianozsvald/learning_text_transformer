@@ -17,6 +17,9 @@ class Transform(abc.ABC):
     def apply(self, s):
         pass
 
+    def configure(self, **kwargs):
+        pass
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -61,8 +64,9 @@ class TransformStrip(Transform):
 
 
 class TransformRemoveWords(Transform):
-    def __init__(self, terms):
-        self.terms = terms
+    def configure(self, **kwargs):
+        print("in configure", kwargs)
+        self.terms = kwargs['terms']
 
     def apply(self, s):
         for term in self.terms:
@@ -83,16 +87,26 @@ class TransformUnidecode(Transform):
         return unidecode.unidecode(s)
 
 
-def get_transforms(mod):
-    transforms = []
-    for c in dir(mod):
-        print(c)
-        c = getattr(mod, c)
-        try:
-            if c is Transform:
-                continue
-            if issubclass(c, Transform):
-                transforms.append(c)
-        except TypeError:
-            pass
-    return transforms
+def get_transforms():
+    all_transforms = []
+    for transform in Transform.__subclasses__():
+        t = transform()
+        t.configure(terms=["Ltd", "ltd", "Limited", "limited"])
+        all_transforms.append(t)
+
+    return all_transforms
+
+
+#def get_transformsX(mod):
+    #transforms = []
+    #for c in dir(mod):
+        #print(c)
+        #c = getattr(mod, c)
+        #try:
+            #if c is Transform:
+                #continue
+            #if issubclass(c, Transform):
+                #transforms.append(c)
+        #except TypeError:
+            #pass
+    #return transforms

@@ -6,22 +6,24 @@ import pandas as pd
 import numpy as np
 import Levenshtein
 from itertools import permutations, chain
-from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers, TransformLowercase, TransformStrip, TransformRemoveWords, TransformFTFY, TransformUnidecode
+import transforms
+#from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers, TransformLowercase, TransformStrip, TransformRemoveWords, TransformFTFY, TransformUnidecode
 
+#trw = TransformRemoveWords()
+#trw.configure(terms=["Ltd", "ltd", "Limited", "limited"])
+TRANSFORMS = transforms.get_transforms()
 
-TRANSFORMS = [TransformExtractNumber(),
-              TransformExpandK(),
-              TransformRemoveDot00(),
-              TransformSpokenWordsToNumbers(),
-              TransformLowercase(),
-              TransformStrip(),
-              TransformRemoveWords(terms=["Ltd", "ltd", "Limited", "limited"]),
-              TransformFTFY(),
-              TransformUnidecode()]
+#TRANSFORMS = [TransformExtractNumber(),
+              #TransformExpandK(),
+              #TransformRemoveDot00(),
+              #TransformSpokenWordsToNumbers(),
+              #TransformLowercase(),
+              #TransformStrip(),
+              #trw,  # terms=["Ltd", "ltd", "Limited", "limited"]),
+              #TransformFTFY(),
+              #TransformUnidecode()]
 
-#import transforms
-#t2 = transforms.get_transforms(transforms)
-#print(t2)
+#import ipdb; ipdb.set_trace()
 
 # make it print wide!
 pd.set_option('display.expand_frame_repr', False)
@@ -38,17 +40,17 @@ if __name__ == "__main__":
     with open(args.input_file) as f:
         reader = csv.reader(f)
         header = next(reader)
-        assert header==["From", "To"]
+        assert header == ["From", "To"]
         examples_to_learn_from = [l for l in reader]
     print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
 
     ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'average_distance'])
 
     # make 1 to full-length list of all permutations
-    perms=[]
+    perms = []
     l2 = list(chain(permutations(TRANSFORMS, rng)) for rng in range(1, len(TRANSFORMS)+1))
     for item in l2:
-      perms += item
+        perms += item
 
     # for each permutation of the possible transformations
     operation_distances = np.zeros((len(examples_to_learn_from), len(TRANSFORMS)))
