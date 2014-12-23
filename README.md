@@ -6,6 +6,12 @@
 
     $ python learning_text_transformer/learner3.py data/companies_simple.csv
 
+
+Installation:
+
+    * $ python setup.py develop
+    * $ nosetests
+
 To add:
 
     * remove suffix words (needs to identify its own terms ahead of time)
