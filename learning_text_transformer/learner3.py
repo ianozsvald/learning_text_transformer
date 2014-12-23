@@ -2,58 +2,34 @@ from pprint import pprint
 from collections import namedtuple
 import csv
 import argparse
-import pandas as pd
 import numpy as np
 import Levenshtein
 from itertools import permutations, chain
 import transforms
-#from transforms import TransformExtractNumber, TransformExpandK, TransformRemoveDot00, TransformSpokenWordsToNumbers, TransformLowercase, TransformStrip, TransformRemoveWords, TransformFTFY, TransformUnidecode
 
-#trw = TransformRemoveWords()
-#trw.configure(terms=["Ltd", "ltd", "Limited", "limited"])
-TRANSFORMS = transforms.get_transforms()
 
-#TRANSFORMS = [TransformExtractNumber(),
-              #TransformExpandK(),
-              #TransformRemoveDot00(),
-              #TransformSpokenWordsToNumbers(),
-              #TransformLowercase(),
-              #TransformStrip(),
-              #trw,  # terms=["Ltd", "ltd", "Limited", "limited"]),
-              #TransformFTFY(),
-              #TransformUnidecode()]
+def make_permutations():
+    """Make 1 to full-length list of all permutations"""
+    list_of_transforms = transforms.get_transforms()
+    perms = []
+    l2 = list(chain(permutations(list_of_transforms, rng)) for rng in range(1, len(list_of_transforms)+1))
+    for item in l2:
+        perms += item
+    return perms
 
-#import ipdb; ipdb.set_trace()
 
-# make it print wide!
-pd.set_option('display.expand_frame_repr', False)
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Project description')
-    parser.add_argument('input_file', type=str, help='CSV file of mappings to learn')
-    parser.add_argument('--verbose', default=False, action="store_true")
-    args = parser.parse_args()
-
-    verbose = args.verbose
-
-    # load data that we'll learn from
-    with open(args.input_file) as f:
+def load_examples(input_file):
+    """Load data that we'll learn from"""
+    with open(input_file) as f:
         reader = csv.reader(f)
         header = next(reader)
         assert header == ["From", "To"]
         examples_to_learn_from = [l for l in reader]
-    print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
+    return examples_to_learn_from
 
-    ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'average_distance'])
 
-    # make 1 to full-length list of all permutations
-    perms = []
-    l2 = list(chain(permutations(TRANSFORMS, rng)) for rng in range(1, len(TRANSFORMS)+1))
-    for item in l2:
-        perms += item
-
-    # for each permutation of the possible transformations
-    operation_distances = np.zeros((len(examples_to_learn_from), len(TRANSFORMS)))
+def search_permutations(perms, examples_to_learn_from):
+    """Test all permutations of Transforms, exit if a 0 distance solution is found"""
     distances_and_sequences = []
     permutations_tested = 0
     for transform_permutation in perms:
@@ -74,15 +50,38 @@ if __name__ == "__main__":
         permutations_tested += 1
         if average_distance_for_this_sequence == 0:
             break
+    return permutations_tested, distances_and_sequences
+
+
+def get_best_transform_sequence(distances_and_sequences):
+    distances_and_sequences.sort(key=lambda x: x.average_distance)
+    chosen_transformations = distances_and_sequences[0].transformations
+    best_score = distances_and_sequences[0].average_distance
+    return chosen_transformations, best_score
+
+ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'average_distance'])
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Project description')
+    parser.add_argument('input_file', type=str, help='CSV file of mappings to learn')
+    parser.add_argument('--verbose', default=False, action="store_true")
+    args = parser.parse_args()
+
+    verbose = args.verbose
+    examples_to_learn_from = load_examples(args.input_file)
+    print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
+
+    perms = make_permutations()
+
+    permutations_tested, distances_and_sequences = search_permutations(perms, examples_to_learn_from)
     print("Tested {} of {} permutations".format(permutations_tested, len(perms)))
 
-    distances_and_sequences.sort(key=lambda x: x.average_distance)
+    chosen_transformations, best_score = get_best_transform_sequence(distances_and_sequences)
+
     if verbose:
         print()
         pprint(distances_and_sequences)
-
-    chosen_transformations = distances_and_sequences[0].transformations
-    best_score = distances_and_sequences[0].average_distance
 
     print("====")
     print("Final sequence of transforms (cost={}):".format(best_score))

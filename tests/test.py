@@ -70,7 +70,6 @@ class TestCase1(unittest.TestCase):
         t = transforms.TransformRemoveWords()
         inp, expected_res, terms = WORDS_TO_REMOVE
         t.configure(terms=terms)
+        self.assertEqual(t.terms, ["ltd"])
         res = t.apply(inp)
         self.assertEqual(res, expected_res)
-
-        self.assertEqual(t.terms, ["ltd"])

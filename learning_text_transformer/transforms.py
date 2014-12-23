@@ -65,8 +65,11 @@ class TransformStrip(Transform):
 
 class TransformRemoveWords(Transform):
     def configure(self, **kwargs):
-        print("in configure", kwargs)
         self.terms = kwargs['terms']
+        #input_strings = kwargs['input_strings']
+        #self.tokens = set()
+        #for input_string in input_strings:
+            #self.tokens.update([tok.strip() for tok in input_string.split()])
 
     def apply(self, s):
         for term in self.terms:
