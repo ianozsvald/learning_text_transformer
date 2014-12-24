@@ -123,7 +123,6 @@ def get_transforms():
         t = [transform()]
         if t[0].__class__.__name__ == "TransformRemoveWords":
             t = []
-            # ["Ltd", "ltd", "Limited", "limited"])
             for term in ["Ltd", "Limited"]:
                 t_new = transform()
                 t_new.configure(terms=[term])
