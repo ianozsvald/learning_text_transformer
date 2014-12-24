@@ -54,6 +54,12 @@ class TestSerialisation(unittest.TestCase):
         self.assertEqual(deserialised_t_res, res)
 
 
+class TestGetTransformations(unittest.TestCase):
+    def test1(self):
+        all_transforms = transforms.get_transforms()
+        self.assertEqual(len(all_transforms), 10)
+
+
 class TestCase1(unittest.TestCase):
     def test1(self):
         t = transforms.TransformRemoveDot00()

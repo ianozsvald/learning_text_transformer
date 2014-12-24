@@ -10,6 +10,7 @@ from learning_text_transformer import spoken_word_to_number
 # TransformRemoveWords needs to be hardcoded with a list of terms, should learn
 # terms from input text
 # spoken words to numbers must allow empty strings
+# get_transforms needs cleanup
 
 
 class Transform(abc.ABC):
@@ -119,9 +120,16 @@ def deserialise_transform(transform_name, parameters):
 def get_transforms():
     all_transforms = []
     for transform in Transform.__subclasses__():
-        t = transform()
-        t.configure(terms=["Ltd", "ltd", "Limited", "limited"])
-        all_transforms.append(t)
+        t = [transform()]
+        if t[0].__class__.__name__ == "TransformRemoveWords":
+            t = []
+            # ["Ltd", "ltd", "Limited", "limited"])
+            for term in ["Ltd", "Limited"]:
+                t_new = transform()
+                t_new.configure(terms=[term])
+                t.append(t_new)
+
+        all_transforms += t
 
     return all_transforms
 

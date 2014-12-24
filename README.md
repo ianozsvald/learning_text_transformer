@@ -11,6 +11,7 @@ Installation:
 
     * $ python setup.py develop
     * $ nosetests
+    * $ py.test -s -v
 
 To add:
 
@@ -19,6 +20,7 @@ To add:
     * lowercase/uppercase all
     * replace variant dashes to - (partially done with unidecode)
 
+    * force some Transform ordering e.g. FTFY first only
     * can we specify types in the final version? e.g. transform to an int?
     * may be want to represent tokenised items as nodes so e.g. order could be messed with?
 

@@ -32,6 +32,8 @@ def search_permutations(perms, examples_to_learn_from):
     """Test all permutations of Transforms, exit if a 0 distance solution is found"""
     distances_and_sequences = []
     permutations_tested = 0
+    transforms_tested = 0
+    transforms_skipped = 0
     for transform_permutation in perms:
         if verbose:
             print(transform_permutation)
@@ -39,6 +41,7 @@ def search_permutations(perms, examples_to_learn_from):
         for example_nbr, example in enumerate(examples_to_learn_from):
             s1, s2 = example
             for transform_nbr, transform in enumerate(transform_permutation):
+                transforms_tested += 1
                 s1_transformed = transform.apply(s1)
                 s1 = s1_transformed
             distance = 1.0 - Levenshtein.ratio(s1, s2)
@@ -50,7 +53,7 @@ def search_permutations(perms, examples_to_learn_from):
         permutations_tested += 1
         if average_distance_for_this_sequence == 0:
             break
-    return permutations_tested, distances_and_sequences
+    return permutations_tested, transforms_tested, distances_and_sequences
 
 
 def get_best_transform_sequence(distances_and_sequences):
@@ -74,8 +77,8 @@ if __name__ == "__main__":
 
     perms = make_permutations()
 
-    permutations_tested, distances_and_sequences = search_permutations(perms, examples_to_learn_from)
-    print("Tested {} of {} permutations".format(permutations_tested, len(perms)))
+    permutations_tested, transforms_tested, distances_and_sequences = search_permutations(perms, examples_to_learn_from)
+    print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
 
     chosen_transformations, best_score = get_best_transform_sequence(distances_and_sequences)
 
