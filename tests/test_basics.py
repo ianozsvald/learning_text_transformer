@@ -12,10 +12,46 @@ ITEM5 = ("thirty-three thousand", "33000")
 ITEM6 = ("schÃ¶n", "schön")
 ITEM7 = ("société", "societe")
 
+SERIALISED_REMOVEDOT00 = ('TransformRemoveDot00', {})
+SERIALISED_UNKNOWN_CLASS = ('BlahBlah', {})
+
+
 WORDS_TO_REMOVE = ("this thing ltd", "this thing ", ["ltd"])
 # spoken word converter breaks on:
 # "forty four hundred" -> "40400"
 # empty input string
+
+
+class TestSerialisation(unittest.TestCase):
+    def test_unknown_class(self):
+        """This class doesn't exist, check it throws a ValueError"""
+        transform_name, parameters = SERIALISED_UNKNOWN_CLASS
+        with self.assertRaises(ValueError):
+            transforms.deserialise_transform(transform_name, parameters)
+
+    def test_removedot00(self):
+        t = transforms.TransformRemoveDot00()
+        self.assertEqual(t.serialise(), SERIALISED_REMOVEDOT00)
+
+        transform_name, parameters = SERIALISED_REMOVEDOT00
+        deserialised_t = transforms.deserialise_transform(transform_name, parameters)
+        self.assertEqual(deserialised_t.__class__, t.__class__)
+
+    def test_remove_words(self):
+        """Check we can serialise and deserialise RemoveWords with parameters"""
+        t = transforms.TransformRemoveWords()
+        inp, expected_res, terms = WORDS_TO_REMOVE
+        t.configure(terms=terms)
+        self.assertEqual(t.terms, ["ltd"])
+        res = t.apply(inp)
+        self.assertEqual(res, expected_res)
+
+        transform_name, parameters = t.serialise()
+        deserialised_t = transforms.deserialise_transform(transform_name, parameters)
+        self.assertEqual(deserialised_t.terms, ["ltd"])
+        self.assertEqual(deserialised_t.__class__, t.__class__)
+        deserialised_t_res = deserialised_t.apply(inp)
+        self.assertEqual(deserialised_t_res, res)
 
 
 class TestCase1(unittest.TestCase):

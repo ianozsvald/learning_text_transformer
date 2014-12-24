@@ -23,6 +23,14 @@ class Transform(abc.ABC):
     def __str__(self):
         return self.__class__.__name__
 
+    def serialise(self):
+        return self.__class__.__name__, dict()
+
+    @classmethod
+    def deserialise(cls, parameters):
+        c = cls()
+        return c
+
 
 class TransformExtractNumber(Transform):
     def apply(self, s):
@@ -71,6 +79,15 @@ class TransformRemoveWords(Transform):
         #for input_string in input_strings:
             #self.tokens.update([tok.strip() for tok in input_string.split()])
 
+    @classmethod
+    def deserialise(cls, parameters):
+        c = cls()
+        c.terms = parameters['terms']
+        return c
+
+    def serialise(self):
+        return self.__class__.__name__, {"terms": self.terms}
+
     def apply(self, s):
         for term in self.terms:
             s = s.replace(term, "")
@@ -88,6 +105,15 @@ class TransformFTFY(Transform):
 class TransformUnidecode(Transform):
     def apply(self, s):
         return unidecode.unidecode(s)
+
+
+def deserialise_transform(transform_name, parameters):
+    """"""
+    for transform_cls in Transform.__subclasses__():
+        if transform_cls.__name__ == transform_name:
+            return transform_cls.deserialise(parameters)
+    else:
+        raise ValueError()
 
 
 def get_transforms():
