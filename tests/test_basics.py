@@ -42,22 +42,58 @@ class TestSerialisation(unittest.TestCase):
         t = transforms.TransformRemoveWords()
         inp, expected_res, terms = WORDS_TO_REMOVE
         t.configure(terms=terms)
-        self.assertEqual(t.terms, ["ltd"])
+        self.assertEqual(t.terms, "ltd")
         res = t.apply(inp)
         self.assertEqual(res, expected_res)
 
         transform_name, parameters = t.serialise()
         deserialised_t = transforms.deserialise_transform(transform_name, parameters)
-        self.assertEqual(deserialised_t.terms, ["ltd"])
+        self.assertEqual(deserialised_t.terms, "ltd")
         self.assertEqual(deserialised_t.__class__, t.__class__)
         deserialised_t_res = deserialised_t.apply(inp)
         self.assertEqual(deserialised_t_res, res)
 
 
 class TestGetTransformations(unittest.TestCase):
-    def test1(self):
-        all_transforms = transforms.get_transforms()
+    def test_count_expected_transforms(self):
+        input_strings, output_strings = [], []
+        all_transforms = transforms.get_transforms(input_strings, output_strings)
+        # TODO change 10 to 8 when I fix hardcoded RemoveWords
         self.assertEqual(len(all_transforms), 10)
+
+    def test_count_expected_transforms_with_basic_input_data(self):
+        input_strings, output_strings = ["a b", "a c"], ["A B", "A C"]
+        all_transforms = transforms.get_transforms(input_strings, output_strings)
+        # TODO change 10 to 11 when I fix hardcoded RemoveWords
+        self.assertEqual(len(all_transforms), 10)
+
+    def test_abc_factory(self):
+        """Test the most basic form of the factory which ignores input_strings and output_strings"""
+        ts = transforms.TransformLowercase.factory([], [])
+        self.assertEqual(len(ts), 1)
+
+    def test_RemoveWords_factory(self):
+        # an empty list of input strings means no RemoveWords transformers
+        ts = transforms.TransformRemoveWords.factory([], [])
+        self.assertEqual(len(ts), 2)
+        # TODO change 2 to 0 when I fix hardcoded RemoveWords
+
+        # if we provide 4 distinct input_string tokens, we expect 4
+        # transformers
+        input_strings = ["x y z", "a y"]
+        output_strings = ["", ""]
+        ts = transforms.TransformRemoveWords.factory(input_strings, output_strings)
+        self.assertEqual(len(ts), 2)
+        # TODO change 2 to 4 when I fix hardcoded RemoveWords
+
+        tokens_seen = []
+        for t in ts:
+            tokens_seen.append(t.terms)
+        # TODO change 2 to 4 when I fix hardcoded RemoveWords
+        self.assertEqual(len(tokens_seen), 2)
+        #import ipdb; ipdb.set_trace()
+        # TODO change 2 to 4 when I fix hardcoded RemoveWords
+        self.assertEqual(len(set(tokens_seen)), 2)
 
 
 class TestCase1(unittest.TestCase):
@@ -112,6 +148,6 @@ class TestCase1(unittest.TestCase):
         t = transforms.TransformRemoveWords()
         inp, expected_res, terms = WORDS_TO_REMOVE
         t.configure(terms=terms)
-        self.assertEqual(t.terms, ["ltd"])
+        self.assertEqual(t.terms, "ltd")
         res = t.apply(inp)
         self.assertEqual(res, expected_res)

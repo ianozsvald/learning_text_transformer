@@ -8,9 +8,9 @@ from itertools import permutations, chain
 import transforms
 
 
-def make_permutations():
+def make_permutations(input_strings, output_strings):
     """Make 1 to full-length list of all permutations"""
-    list_of_transforms = transforms.get_transforms()
+    list_of_transforms = transforms.get_transforms(input_strings, output_strings)
     perms = []
     l2 = list(chain(permutations(list_of_transforms, rng)) for rng in range(1, len(list_of_transforms)+1))
     for item in l2:
@@ -75,7 +75,13 @@ if __name__ == "__main__":
     examples_to_learn_from = load_examples(args.input_file)
     print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
 
-    perms = make_permutations()
+    input_strings, output_strings = [], []
+    for frm, to in examples_to_learn_from:
+        input_strings.append(frm)
+        output_strings.append(to)
+
+    perms = make_permutations(input_strings, output_strings)
+    print("Using {} permutations".format(len(perms)))
 
     permutations_tested, transforms_tested, distances_and_sequences = search_permutations(perms, examples_to_learn_from)
     print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))

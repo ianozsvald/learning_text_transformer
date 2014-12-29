@@ -28,6 +28,11 @@ class Transform(abc.ABC):
         return self.__class__.__name__, dict()
 
     @classmethod
+    def factory(cls, input_strings, output_strings):
+        cs = [cls()]
+        return cs
+
+    @classmethod
     def deserialise(cls, parameters):
         c = cls()
         return c
@@ -74,11 +79,34 @@ class TransformStrip(Transform):
 
 class TransformRemoveWords(Transform):
     def configure(self, **kwargs):
-        self.terms = kwargs['terms']
-        #input_strings = kwargs['input_strings']
-        #self.tokens = set()
+        terms = kwargs['terms']
+        assert len(terms) == 1
+        self.terms = terms[0]
+
+    @classmethod
+    def factory(cls, input_strings, output_strings):
+        cs = []
+        for term in ['Ltd', 'Limited']:
+            c = cls()
+            c.terms = term
+            cs.append(c)
+        return cs
+
+    #@classmethod
+    # this version makes Transform based on lots of input possibilites
+    # but those explodes the current possibility-space!
+    #def factory(cls, input_strings, output_strings):
+        #cs = []
+        #tokens = set()
         #for input_string in input_strings:
-            #self.tokens.update([tok.strip() for tok in input_string.split()])
+            #tokens.update([tok.strip() for tok in input_string.split()])
+        #print("Making ", len(tokens))
+        #1/0  # have to bail else it makes too many tokens!
+        #for token in tokens:
+            #c = cls()
+            #c.terms = token
+            #cs.append(c)
+        #return cs
 
     @classmethod
     def deserialise(cls, parameters):
@@ -90,8 +118,7 @@ class TransformRemoveWords(Transform):
         return self.__class__.__name__, {"terms": self.terms}
 
     def apply(self, s):
-        for term in self.terms:
-            s = s.replace(term, "")
+        s = s.replace(self.terms, "")
         return s
 
     def __str__(self):
@@ -117,20 +144,28 @@ def deserialise_transform(transform_name, parameters):
         raise ValueError()
 
 
-def get_transforms():
+def get_transforms(input_strings, output_strings):
     all_transforms = []
     for transform in Transform.__subclasses__():
-        t = [transform()]
-        if t[0].__class__.__name__ == "TransformRemoveWords":
-            t = []
-            for term in ["Ltd", "Limited"]:
-                t_new = transform()
-                t_new.configure(terms=[term])
-                t.append(t_new)
-
-        all_transforms += t
-
+        ts = transform.factory(input_strings, output_strings)
+        all_transforms += ts
     return all_transforms
+
+
+#def get_transforms_OLD():
+    #all_transforms = []
+    #for transform in Transform.__subclasses__():
+        #t = [transform()]
+        #if t[0].__class__.__name__ == "TransformRemoveWords":
+            #t = []
+            #for term in ["Ltd", "Limited"]:
+                #t_new = transform()
+                #t_new.configure(terms=[term])
+                #t.append(t_new)
+
+        #all_transforms += t
+
+    #return all_transforms
 
 
 #def get_transformsX(mod):
