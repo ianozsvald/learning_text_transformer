@@ -145,6 +145,7 @@ def deserialise_transform(transform_name, parameters):
 
 
 def get_transforms(input_strings, output_strings):
+    # note that the ordering is non-deterministic
     all_transforms = []
     for transform in Transform.__subclasses__():
         ts = transform.factory(input_strings, output_strings)

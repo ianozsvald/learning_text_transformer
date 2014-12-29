@@ -1,4 +1,5 @@
 from pprint import pprint
+import time
 from collections import namedtuple
 import csv
 import argparse
@@ -33,7 +34,6 @@ def search_permutations(perms, examples_to_learn_from):
     distances_and_sequences = []
     permutations_tested = 0
     transforms_tested = 0
-    transforms_skipped = 0
     for transform_permutation in perms:
         if verbose:
             print(transform_permutation)
@@ -80,13 +80,17 @@ if __name__ == "__main__":
         input_strings.append(frm)
         output_strings.append(to)
 
+    t1 = time.time()
     perms = make_permutations(input_strings, output_strings)
+    print("Took {0:.2f}s to make all permutations".format(time.time() - t1))
     print("Using {} permutations".format(len(perms)))
 
     permutations_tested, transforms_tested, distances_and_sequences = search_permutations(perms, examples_to_learn_from)
     print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
 
+    t1 = time.time()
     chosen_transformations, best_score = get_best_transform_sequence(distances_and_sequences)
+    print("Took {0:.2f}s to find best sequence".format(time.time() - t1))
 
     if verbose:
         print()
