@@ -5,6 +5,7 @@ import csv
 import argparse
 import statistics
 import Levenshtein
+import ftfy
 from itertools import permutations, chain
 from learning_text_transformer import transforms
 
@@ -31,12 +32,13 @@ def load_examples(input_file):
 
 def apply_transforms(ts, s):
     """Apply list of Transform objects to string s, return transformed string"""
+    s = ftfy.fix_text(s)  # fix any bad unicode
     for transform_nbr, t in enumerate(ts):
         s = t.apply(s)
     return s
 
 
-def search_permutations(perms, examples_to_learn_from):
+def search_permutations(perms, examples_to_learn_from, verbose):
     """Test all permutations of Transforms, exit if a 0 distance solution is found"""
     distances_and_sequences = []
     permutations_tested = 0
@@ -70,6 +72,33 @@ def get_best_transform_sequence(distances_and_sequences):
 ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'average_distance'])
 
 
+def search_and_find_best_sequence(examples_to_learn_from, verbose=False):
+    input_strings, output_strings = [], []
+    for frm, to in examples_to_learn_from:
+        input_strings.append(frm)
+        output_strings.append(to)
+
+    t1 = time.time()
+    perms = make_permutations(input_strings, output_strings)
+    if verbose:
+        print("Took {0:.2f}s to make all permutations".format(time.time() - t1))
+        print("Using {} permutations".format(len(perms)))
+
+    permutations_tested, transforms_tested, distances_and_sequences = search_permutations(perms, examples_to_learn_from, verbose)
+    print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
+
+    t1 = time.time()
+    chosen_transformations, best_score = get_best_transform_sequence(distances_and_sequences)
+    if verbose:
+        print("Took {0:.2f}s to find best sequence".format(time.time() - t1))
+
+    if verbose:
+        print()
+        pprint(distances_and_sequences)
+
+    return chosen_transformations, best_score
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Project description')
     parser.add_argument('input_file', type=str, help='CSV file of mappings to learn')
@@ -80,26 +109,7 @@ if __name__ == "__main__":
     examples_to_learn_from = load_examples(args.input_file)
     print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
 
-    input_strings, output_strings = [], []
-    for frm, to in examples_to_learn_from:
-        input_strings.append(frm)
-        output_strings.append(to)
-
-    t1 = time.time()
-    perms = make_permutations(input_strings, output_strings)
-    print("Took {0:.2f}s to make all permutations".format(time.time() - t1))
-    print("Using {} permutations".format(len(perms)))
-
-    permutations_tested, transforms_tested, distances_and_sequences = search_permutations(perms, examples_to_learn_from)
-    print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
-
-    t1 = time.time()
-    chosen_transformations, best_score = get_best_transform_sequence(distances_and_sequences)
-    print("Took {0:.2f}s to find best sequence".format(time.time() - t1))
-
-    if verbose:
-        print()
-        pprint(distances_and_sequences)
+    chosen_transformations, best_score = search_and_find_best_sequence(examples_to_learn_from, verbose)
 
     print("====")
     print("Final sequence of transforms (cost={}):".format(best_score))

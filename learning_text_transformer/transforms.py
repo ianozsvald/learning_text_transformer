@@ -127,9 +127,9 @@ class TransformRemoveWords(Transform):
         return self.__class__.__name__ + "(" + repr(self.terms) + ")"
 
 
-class TransformFTFY(Transform):
-    def apply(self, s):
-        return ftfy.fix_text(s)
+#class TransformFTFY(Transform):
+    #def apply(self, s):
+        #return ftfy.fix_text(s)
 
 
 class TransformUnidecode(Transform):

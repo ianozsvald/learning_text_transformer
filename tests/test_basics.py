@@ -78,18 +78,38 @@ class TestSerialisation(unittest.TestCase):
         self.assertEqual(deserialised_ts_output, ITEM8[1])
 
 
+class TestSearchAndSerialise(unittest.TestCase):
+    """Run the full process of searching for a transform sequence, serialise, deserialise"""
+    def test_search(self):
+        # take a simple input/output sequence, search for pattern
+        examples_to_learn_from = [ITEM8]
+        chosen_transformations, best_score = learner.search_and_find_best_sequence(examples_to_learn_from)
+        self.assertEqual(best_score, 0.0)
+
+        # serialise the result
+        serialisation = transforms.Serialisation()
+        serialised_json = serialisation.serialise(chosen_transformations)
+
+        # deserialise
+        ts = serialisation.deserialise(serialised_json)
+
+        # test on the same input, confirm same output
+        result = learner.apply_transforms(ts, ITEM8[0])
+        self.assertEqual(result, ITEM8[1])
+
+
 class TestGetTransformations(unittest.TestCase):
     def test_count_expected_transforms(self):
         input_strings, output_strings = [], []
         all_transforms = transforms.get_transforms(input_strings, output_strings)
         # TODO change 10 to 8 when I fix hardcoded RemoveWords
-        self.assertEqual(len(all_transforms), 10)
+        self.assertEqual(len(all_transforms), 9)
 
     def test_count_expected_transforms_with_basic_input_data(self):
         input_strings, output_strings = ["a b", "a c"], ["A B", "A C"]
         all_transforms = transforms.get_transforms(input_strings, output_strings)
         # TODO change 10 to 11 when I fix hardcoded RemoveWords
-        self.assertEqual(len(all_transforms), 10)
+        self.assertEqual(len(all_transforms), 9)
 
     def test_abc_factory(self):
         """Test the most basic form of the factory which ignores input_strings and output_strings"""
@@ -154,14 +174,14 @@ class TestCase1(unittest.TestCase):
         res = t.apply(ITEM5[0])
         self.assertEqual(res, ITEM5[1])
 
-    def test5(self):
-        t = transforms.TransformFTFY()
-        res = t.apply(ITEM6[0])
-        self.assertEqual(res, ITEM6[1])
+    #def test5(self):
+        #t = transforms.TransformFTFY()
+        #res = t.apply(ITEM6[0])
+        #self.assertEqual(res, ITEM6[1])
 
-        # check for a no-op
-        res = t.apply(ITEM4[0])
-        self.assertEqual(res, ITEM4[0])
+        ## check for a no-op
+        #res = t.apply(ITEM4[0])
+        #self.assertEqual(res, ITEM4[0])
 
     def test6(self):
         t = transforms.TransformUnidecode()
