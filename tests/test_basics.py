@@ -1,6 +1,9 @@
 """Some tests"""
 import unittest
+import json
 from learning_text_transformer import transforms
+from learning_text_transformer import learner3 as learner
+
 
 EMPTY_STRING = ""
 # most items are (inp, expected_result) and t.apply(inp)->res
@@ -11,6 +14,7 @@ ITEM4 = ("forty four", "44")
 ITEM5 = ("thirty-three thousand", "33000")
 ITEM6 = ("schÃ¶n", "schön")
 ITEM7 = ("société", "societe")
+ITEM8 = ("Mixed Case Ltd", "mixed case")
 
 SERIALISED_REMOVEDOT00 = ('TransformRemoveDot00', {})
 SERIALISED_UNKNOWN_CLASS = ('BlahBlah', {})
@@ -23,18 +27,21 @@ WORDS_TO_REMOVE = ("this thing ltd", "this thing ", ["ltd"])
 
 
 class TestSerialisation(unittest.TestCase):
+    def setUp(self):
+        self.serialiser = transforms.Serialisation()
+
     def test_unknown_class(self):
         """This class doesn't exist, check it throws a ValueError"""
         transform_name, parameters = SERIALISED_UNKNOWN_CLASS
         with self.assertRaises(ValueError):
-            transforms.deserialise_transform(transform_name, parameters)
+            self.serialiser._deserialise_transform(transform_name, parameters)
 
     def test_removedot00(self):
         t = transforms.TransformRemoveDot00()
         self.assertEqual(t.serialise(), SERIALISED_REMOVEDOT00)
 
         transform_name, parameters = SERIALISED_REMOVEDOT00
-        deserialised_t = transforms.deserialise_transform(transform_name, parameters)
+        deserialised_t = self.serialiser._deserialise_transform(transform_name, parameters)
         self.assertEqual(deserialised_t.__class__, t.__class__)
 
     def test_remove_words(self):
@@ -47,11 +54,28 @@ class TestSerialisation(unittest.TestCase):
         self.assertEqual(res, expected_res)
 
         transform_name, parameters = t.serialise()
-        deserialised_t = transforms.deserialise_transform(transform_name, parameters)
+        deserialised_t = self.serialiser._deserialise_transform(transform_name, parameters)
         self.assertEqual(deserialised_t.terms, "ltd")
         self.assertEqual(deserialised_t.__class__, t.__class__)
         deserialised_t_res = deserialised_t.apply(inp)
         self.assertEqual(deserialised_t_res, res)
+
+    def test_serialiser_sequence(self):
+        """Serialise 3 items, then deserialise, check they work as expected"""
+        t1 = transforms.TransformRemoveWords.factory("", "")
+        t2 = transforms.TransformLowercase.factory("", "")
+        t3 = transforms.TransformStrip.factory("", "")
+        ts = t1 + t2 + t3
+        ts_output = learner.apply_transforms(ts, ITEM8[0])
+        self.assertEqual(ts_output, ITEM8[1])
+
+        serialised_json = self.serialiser.serialise(ts)
+        self.assertGreater(len(serialised_json), 0)  # assume we have some bytes
+        json.loads(serialised_json)  # test the serialiser makes valid JSON
+
+        deserialised_ts = self.serialiser.deserialise(serialised_json)
+        deserialised_ts_output = learner.apply_transforms(deserialised_ts, ITEM8[0])
+        self.assertEqual(deserialised_ts_output, ITEM8[1])
 
 
 class TestGetTransformations(unittest.TestCase):

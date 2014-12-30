@@ -1,4 +1,5 @@
 import abc
+import json
 import re
 import ftfy
 import unidecode
@@ -11,6 +12,7 @@ from learning_text_transformer import spoken_word_to_number
 # terms from input text
 # spoken words to numbers must allow empty strings
 # get_transforms needs cleanup
+# Do I need 'configure' still?
 
 
 class Transform(abc.ABC):
@@ -135,13 +137,31 @@ class TransformUnidecode(Transform):
         return unidecode.unidecode(s)
 
 
-def deserialise_transform(transform_name, parameters):
-    """"""
-    for transform_cls in Transform.__subclasses__():
-        if transform_cls.__name__ == transform_name:
-            return transform_cls.deserialise(parameters)
-    else:
-        raise ValueError()
+class Serialisation(object):
+    def _deserialise_transform(self, transform_name, parameters):
+        """"""
+        for transform_cls in Transform.__subclasses__():
+            if transform_cls.__name__ == transform_name:
+                return transform_cls.deserialise(parameters)
+        else:
+            raise ValueError()
+
+    def serialise(self, transforms):
+        """JSON Serialise the sequence of transforms"""
+        serialised_raw = []
+        for transform in transforms:
+            serialised_raw.append(transform.serialise())
+        serialised_json = json.dumps(serialised_raw)
+        return serialised_json
+
+    def deserialise(self, serialised_json):
+        """Deserialise from JSON and return instantiated transforms"""
+        serialised_raw = json.loads(serialised_json)
+        transforms = []
+        for name, parameters in serialised_raw:
+            t = self._deserialise_transform(name, parameters)
+            transforms.append(t)
+        return transforms
 
 
 def get_transforms(input_strings, output_strings):
@@ -150,6 +170,7 @@ def get_transforms(input_strings, output_strings):
     for transform in Transform.__subclasses__():
         ts = transform.factory(input_strings, output_strings)
         all_transforms += ts
+    all_transforms.sort(key=lambda x: x.__class__.__name__)
     return all_transforms
 
 

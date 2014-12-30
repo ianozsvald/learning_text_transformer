@@ -32,3 +32,4 @@ Possibly useful libraries:
     * https://pypi.python.org/pypi/num2words convert words to numbers (in various languages)
     * https://github.com/ghewgill/text2num/blob/master/text2num.py convert words to numbers
     * https://pypi.python.org/pypi/inflect  Correctly generate plurals, singular nouns, ordinals, indefinite articles; convert numbers to words.
+    * http://code.activestate.com/recipes/52213/ soundex

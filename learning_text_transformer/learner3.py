@@ -3,10 +3,10 @@ import time
 from collections import namedtuple
 import csv
 import argparse
-import numpy as np
+import statistics
 import Levenshtein
 from itertools import permutations, chain
-import transforms
+from learning_text_transformer import transforms
 
 
 def make_permutations(input_strings, output_strings):
@@ -29,6 +29,13 @@ def load_examples(input_file):
     return examples_to_learn_from
 
 
+def apply_transforms(ts, s):
+    """Apply list of Transform objects to string s, return transformed string"""
+    for transform_nbr, t in enumerate(ts):
+        s = t.apply(s)
+    return s
+
+
 def search_permutations(perms, examples_to_learn_from):
     """Test all permutations of Transforms, exit if a 0 distance solution is found"""
     distances_and_sequences = []
@@ -38,15 +45,13 @@ def search_permutations(perms, examples_to_learn_from):
         if verbose:
             print(transform_permutation)
         distances_per_example = []
-        for example_nbr, example in enumerate(examples_to_learn_from):
-            s1, s2 = example
-            for transform_nbr, transform in enumerate(transform_permutation):
-                transforms_tested += 1
-                s1_transformed = transform.apply(s1)
-                s1 = s1_transformed
+        for example_nbr, (s1, s2) in enumerate(examples_to_learn_from):
+            s1 = apply_transforms(transform_permutation, s1)
+            transforms_tested += len(transform_permutation)
             distance = 1.0 - Levenshtein.ratio(s1, s2)
             distances_per_example.append(distance)
-        average_distance_for_this_sequence = np.mean(distances_per_example)
+
+        average_distance_for_this_sequence = statistics.mean(distances_per_example)
         if verbose:
             print(distances_per_example, average_distance_for_this_sequence)
         distances_and_sequences.append(ScoredTransformation(transform_permutation, average_distance_for_this_sequence))
