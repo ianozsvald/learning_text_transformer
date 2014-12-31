@@ -66,8 +66,8 @@ def search_permutations(perms, examples_to_learn_from, verbose):
 def get_best_transform_sequence(distances_and_sequences):
     distances_and_sequences.sort(key=lambda x: x.average_distance)
     chosen_transformations = distances_and_sequences[0].transformations
-    best_score = distances_and_sequences[0].average_distance
-    return chosen_transformations, best_score
+    best_cost = distances_and_sequences[0].average_distance
+    return chosen_transformations, best_cost
 
 ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'average_distance'])
 
@@ -85,10 +85,11 @@ def search_and_find_best_sequence(examples_to_learn_from, verbose=False):
         print("Using {} permutations".format(len(perms)))
 
     permutations_tested, transforms_tested, distances_and_sequences = search_permutations(perms, examples_to_learn_from, verbose)
-    print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
+    if verbose:
+        print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
 
     t1 = time.time()
-    chosen_transformations, best_score = get_best_transform_sequence(distances_and_sequences)
+    chosen_transformations, best_cost = get_best_transform_sequence(distances_and_sequences)
     if verbose:
         print("Took {0:.2f}s to find best sequence".format(time.time() - t1))
 
@@ -96,7 +97,7 @@ def search_and_find_best_sequence(examples_to_learn_from, verbose=False):
         print()
         pprint(distances_and_sequences)
 
-    return chosen_transformations, best_score
+    return chosen_transformations, best_cost
 
 
 if __name__ == "__main__":
@@ -109,9 +110,9 @@ if __name__ == "__main__":
     examples_to_learn_from = load_examples(args.input_file)
     print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
 
-    chosen_transformations, best_score = search_and_find_best_sequence(examples_to_learn_from, verbose)
+    chosen_transformations, best_cost = search_and_find_best_sequence(examples_to_learn_from, verbose)
 
     print("====")
-    print("Final sequence of transforms (cost={}):".format(best_score))
+    print("Final sequence of transforms (cost={}):".format(best_cost))
     for chosen_transformation in chosen_transformations:
         print(chosen_transformation)

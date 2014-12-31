@@ -69,11 +69,10 @@ class TestSerialisation(unittest.TestCase):
         ts_output = learner.apply_transforms(ts, ITEM8[0])
         self.assertEqual(ts_output, ITEM8[1])
 
-        serialised_json = self.serialiser.serialise(ts)
-        self.assertGreater(len(serialised_json), 0)  # assume we have some bytes
-        json.loads(serialised_json)  # test the serialiser makes valid JSON
+        serialised_raw = self.serialiser.serialise(ts)
+        self.assertGreater(len(serialised_raw), 0)  # assume we have some bytes
 
-        deserialised_ts = self.serialiser.deserialise(serialised_json)
+        deserialised_ts = self.serialiser.deserialise(serialised_raw)
         deserialised_ts_output = learner.apply_transforms(deserialised_ts, ITEM8[0])
         self.assertEqual(deserialised_ts_output, ITEM8[1])
 

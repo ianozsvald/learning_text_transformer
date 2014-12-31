@@ -13,6 +13,12 @@ Installation:
     * $ nosetests
     * $ py.test -s -v
 
+To trial it:
+
+    $ python learning_text_transformer/server.py
+    >>> query={'from':['this Ltd', 'this blah'], 'to':['this', 'this blah']}
+    >>> requests.post('http://localhost:5000/learn', data=json.dumps(query), headers={'Content-Type': 'application/json'}).json()
+
 To add:
 
     * remove suffix words (needs to identify its own terms ahead of time)

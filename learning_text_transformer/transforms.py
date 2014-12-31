@@ -151,12 +151,10 @@ class Serialisation(object):
         serialised_raw = []
         for transform in transforms:
             serialised_raw.append(transform.serialise())
-        serialised_json = json.dumps(serialised_raw)
-        return serialised_json
+        return serialised_raw
 
-    def deserialise(self, serialised_json):
+    def deserialise(self, serialised_raw):
         """Deserialise from JSON and return instantiated transforms"""
-        serialised_raw = json.loads(serialised_json)
         transforms = []
         for name, parameters in serialised_raw:
             t = self._deserialise_transform(name, parameters)
