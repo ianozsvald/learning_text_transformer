@@ -38,7 +38,50 @@ def apply_transforms(ts, s):
     return s
 
 
-def search_permutations(perms, examples_to_learn_from, verbose):
+def evaluate_transforms(cur_seq, examples_to_learn_from):
+    #global nbr_evals
+    #nbr_evals += 1
+    #verbose = False
+    #if verbose:
+        #print(transform_permutation)
+    distances_per_example = []
+    for example_nbr, (s1, s2) in enumerate(examples_to_learn_from):
+        s1 = apply_transforms(cur_seq, s1)
+        #transforms_tested += len(transform_permutation)
+        distance = 1.0 - Levenshtein.ratio(s1, s2)
+        distances_per_example.append(distance)
+
+    average_distance_for_this_sequence = statistics.mean(distances_per_example)
+    return average_distance_for_this_sequence
+
+
+def search_transforms(ts, cur_seq, examples_to_learn_from):
+    for idx in range(len(ts)):
+        t = ts.pop(idx)
+        cur_seq.append(t)
+        average_distances_for_this_sequence = evaluate_transforms(cur_seq, examples_to_learn_from)
+        if average_distances_for_this_sequence == 0:
+            print("GOT ONE!")
+            break
+        else:
+            search_transforms(ts, cur_seq, examples_to_learn_from)
+        cur_seq.pop()
+        ts.insert(idx, t)
+
+
+def search_permutations(examples_to_learn_from, verbose):
+    input_strings, output_strings = [], []
+    for frm, to in examples_to_learn_from:
+        input_strings.append(frm)
+        output_strings.append(to)
+
+    ts = transforms.get_transforms(input_strings, output_strings)
+    cur_seq = []
+    search_transforms(ts, cur_seq, examples_to_learn_from)
+    #distances_and_sequences.append(ScoredTransformation(transform_permutation, average_distance_for_this_sequence))
+
+
+def search_permutationsOLD(perms, examples_to_learn_from, verbose):
     """Test all permutations of Transforms, exit if a 0 distance solution is found"""
     distances_and_sequences = []
     permutations_tested = 0
@@ -79,12 +122,12 @@ def search_and_find_best_sequence(examples_to_learn_from, verbose=False):
         output_strings.append(to)
 
     t1 = time.time()
-    perms = make_permutations(input_strings, output_strings)
-    if verbose:
-        print("Took {0:.2f}s to make all permutations".format(time.time() - t1))
-        print("Using {} permutations".format(len(perms)))
+    #perms = make_permutations(input_strings, output_strings)
+    #if verbose:
+        #print("Took {0:.2f}s to make all permutations".format(time.time() - t1))
+        #print("Using {} permutations".format(len(perms)))
 
-    permutations_tested, transforms_tested, distances_and_sequences = search_permutations(perms, examples_to_learn_from, verbose)
+    permutations_tested, transforms_tested, distances_and_sequences = search_permutations(examples_to_learn_from, verbose)
     if verbose:
         print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
 
