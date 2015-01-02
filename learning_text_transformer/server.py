@@ -12,10 +12,7 @@ api = restful.Api(app)
 
 class HelloWorld(restful.Resource):
     def get(self):
-        return {'nothing': 'here'}
-
-    def post(self):
-        return {'nada': 'nada'}
+        return {'learning': 'server'}
 api.add_resource(HelloWorld, '/')
 
 
@@ -30,9 +27,6 @@ class Learn(restful.Resource):
     def check_inputs_or_abort(self, reqs):
         if len(reqs['inputs']) != len(reqs['outputs']):
             abort(400)
-
-    def get(self):
-        return {'use': 'post'}
 
     def post(self):
         reqs = request.get_json()

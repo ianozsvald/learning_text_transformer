@@ -1,7 +1,9 @@
 Deployment
 ====
 
-/home/ianozsvald/webapps/api_annotate_io/apache2/bin/restart
+    $ cd /home/ianozsvald/webapps/api_annotate_io/learning_text_transformer
+    $ git pull
+    $ /home/ianozsvald/webapps/api_annotate_io/apache2/bin/restart
 
 First deployment:
 
@@ -20,7 +22,11 @@ To start Apache, run: ~/webapps/<app_name>/apache2/bin/start
 To stop Apache, run: ~/webapps/<app_name>/apache2/bin/stop
 
 Python documentation is available at: http://docs.webfaction.com/software/python.html
+http://aaronpresley.com/deploying-a-flask-project-on-webfaction/  # both Rewrite and Alias required
+http://flask.pocoo.org/snippets/65/
 
+Logs
+/home/ianozsvald/logs/user/error_api_annotate_io.log
 
 Installation:
 
