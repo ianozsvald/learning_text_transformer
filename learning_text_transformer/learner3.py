@@ -55,7 +55,7 @@ def evaluate_transforms(cur_seq, examples_to_learn_from):
     return average_distance_for_this_sequence
 
 
-def search_transforms(ts, cur_seq, examples_to_learn_from):
+def search_transforms(ts, cur_seq, examples_to_learn_from, keep_going):
     for idx in range(len(ts)):
         t = ts.pop(idx)
         cur_seq.append(t)
@@ -64,9 +64,11 @@ def search_transforms(ts, cur_seq, examples_to_learn_from):
             print("GOT ONE!")
             break
         else:
-            search_transforms(ts, cur_seq, examples_to_learn_from)
+            if keep_going:
+                search_transforms(ts, cur_seq, examples_to_learn_from, keep_going)
         cur_seq.pop()
         ts.insert(idx, t)
+    return keep_going
 
 
 def search_permutations(examples_to_learn_from, verbose):
@@ -75,7 +77,7 @@ def search_permutations(examples_to_learn_from, verbose):
         input_strings.append(frm)
         output_strings.append(to)
 
-    ts = transforms.get_transforms(input_strings, output_strings)
+    ts = transforms.get_transforms(input_strings, output_strings, True)
     cur_seq = []
     search_transforms(ts, cur_seq, examples_to_learn_from)
     #distances_and_sequences.append(ScoredTransformation(transform_permutation, average_distance_for_this_sequence))
