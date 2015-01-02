@@ -1,0 +1,31 @@
+Deployment
+====
+
+/home/ianozsvald/webapps/api_annotate_io/apache2/bin/restart
+
+First deployment:
+
+api_annotate_io
+This creates an Apache server with the mod_wsgi 4.2.8 module and Python 3.4 installed.
+
+The front-end web server proxies incoming requests to the Apache server listening on an unprivileged port.
+
+The Apache server is installed in: ~/webapps/<app name>/apache2/
+The document root is: ~/webapps/<app name>/htdocs/
+
+A cron job is created to restart the Apache server every 20 minutes if it is not already running.
+
+To restart Apache, run: ~/webapps/<app_name>/apache2/bin/restart
+To start Apache, run: ~/webapps/<app_name>/apache2/bin/start
+To stop Apache, run: ~/webapps/<app_name>/apache2/bin/stop
+
+Python documentation is available at: http://docs.webfaction.com/software/python.html
+
+
+Installation:
+
+ 1007  pip3.4 install --user flask
+ 1008  pip3.4 install --user flask-restful
+ 1009  pip3.4 install --user pytest
+
+also: ftfy, unidecode, python-Levenshtein

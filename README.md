@@ -16,8 +16,12 @@ Installation:
 To trial it:
 
     $ python learning_text_transformer/server.py
+    >>> import requests
+    >>> import json
     >>> query={'from':['this Ltd', 'this blah'], 'to':['this', 'this blah']}
-    >>> requests.post('http://localhost:5000/learn', data=json.dumps(query), headers={'Content-Type': 'application/json'}).json()
+    >>> URL="http://api.annotate.io/learn"
+    >>> URL="http://localhost:5000/learn"
+    >>> requests.post(URL, data=json.dumps(query), headers={'Content-Type': 'application/json'}).json()
 
 To add:
 
@@ -39,3 +43,6 @@ Possibly useful libraries:
     * https://github.com/ghewgill/text2num/blob/master/text2num.py convert words to numbers
     * https://pypi.python.org/pypi/inflect  Correctly generate plurals, singular nouns, ordinals, indefinite articles; convert numbers to words.
     * http://code.activestate.com/recipes/52213/ soundex
+    * http://pint.readthedocs.org/en/0.6/ unit conversion
+
+
