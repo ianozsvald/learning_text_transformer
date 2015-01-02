@@ -67,10 +67,11 @@ if __name__ == "__main__":
     # Use a POST to call /transform with the code
     # and new inputs, we'll receive outputs back
     url = args.url + "/transform"
-    query = {'inputs': ['RBS Ltd',
+    query = {'inputs': ['RBS Ltd',  # token 'Ltd' that needs stripping
                         'Royal Bank of Scotland Ltd',
-                        'Lancôme',
-                        ' Estée Lauder  '],
+                        'Lancôme',  # non-ASCII characters
+                        ' Estée Lauder  '  # spare prefix/suffix whitespace
+                        ],
              'transforms': transforms}
     resp = requests.post(url,
                          data=json.dumps(query),

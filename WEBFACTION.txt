@@ -4,6 +4,7 @@ Deployment
     $ cd /home/ianozsvald/webapps/api_annotate_io/learning_text_transformer
     $ git pull
     $ /home/ianozsvald/webapps/api_annotate_io/apache2/bin/restart
+    $ curl http://api.annotate.io
 
 First deployment:
 
