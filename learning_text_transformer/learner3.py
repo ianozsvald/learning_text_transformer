@@ -33,55 +33,81 @@ def load_examples(input_file):
 def apply_transforms(ts, s):
     """Apply list of Transform objects to string s, return transformed string"""
     s = ftfy.fix_text(s)  # fix any bad unicode
+    transform_always_made_changes = True
     for transform_nbr, t in enumerate(ts):
-        s = t.apply(s)
-    return s
+        s1 = t.apply(s)
+        if s1 == s:
+            transform_always_made_changes = False
+        s = s1
+    return s, transform_always_made_changes
 
-
+nbr_evals = 0
 def evaluate_transforms(cur_seq, examples_to_learn_from):
-    #global nbr_evals
-    #nbr_evals += 1
+    global nbr_evals
+    nbr_evals += 1
+    if nbr_evals % 1000 == 0:
+        print("nbr_evals", nbr_evals, cur_seq)
     #verbose = False
     #if verbose:
         #print(transform_permutation)
     distances_per_example = []
+    transform_made_a_change = True
     for example_nbr, (s1, s2) in enumerate(examples_to_learn_from):
-        s1 = apply_transforms(cur_seq, s1)
-        #transforms_tested += len(transform_permutation)
+        s1, transform_always_made_changes = apply_transforms(cur_seq, s1)
+        if not transform_always_made_changes:
+            transform_made_a_change = False
+        #if s1 == s2:
+            #transform_made_a_change = False
         distance = 1.0 - Levenshtein.ratio(s1, s2)
         distances_per_example.append(distance)
 
     average_distance_for_this_sequence = statistics.mean(distances_per_example)
-    return average_distance_for_this_sequence
+    #print("evaluation:", cur_seq, average_distance_for_this_sequence, nbr_evals)
+    return average_distance_for_this_sequence, transform_made_a_change
 
 
-def search_transforms(ts, cur_seq, examples_to_learn_from, keep_going):
+best_distance = None
+best_cur_seq = None
+import copy
+def search_transforms(ts, cur_seq, examples_to_learn_from):
+    #print("Searching using:", cur_seq)
+    global best_distance, best_cur_seq
+    keep_going = True
     for idx in range(len(ts)):
+        if not keep_going:
+            continue
         t = ts.pop(idx)
         cur_seq.append(t)
-        average_distances_for_this_sequence = evaluate_transforms(cur_seq, examples_to_learn_from)
-        if average_distances_for_this_sequence == 0:
-            print("GOT ONE!")
-            break
-        else:
-            if keep_going:
-                search_transforms(ts, cur_seq, examples_to_learn_from, keep_going)
+        average_distance_for_this_sequence, transform_made_a_change = evaluate_transforms(cur_seq, examples_to_learn_from)
+        if best_distance is None or average_distance_for_this_sequence < best_distance:
+            best_distance = average_distance_for_this_sequence
+            best_cur_seq = copy.copy(cur_seq)
+            print("New best", best_distance, best_cur_seq, nbr_evals)
+
+        if average_distance_for_this_sequence == 0:
+            keep_going = False
+        if keep_going and transform_made_a_change:
+            keep_going = search_transforms(ts, cur_seq, examples_to_learn_from)
+        if not transform_made_a_change:
+            print("Skipping...")
         cur_seq.pop()
         ts.insert(idx, t)
     return keep_going
 
 
 def search_permutations(examples_to_learn_from, verbose):
+    global nbr_evals
+    nbr_evals = 0
     input_strings, output_strings = [], []
     for frm, to in examples_to_learn_from:
         input_strings.append(frm)
         output_strings.append(to)
 
-    ts = transforms.get_transforms(input_strings, output_strings, True)
+    ts = transforms.get_transforms(input_strings, output_strings)
     cur_seq = []
     search_transforms(ts, cur_seq, examples_to_learn_from)
     #distances_and_sequences.append(ScoredTransformation(transform_permutation, average_distance_for_this_sequence))
-
+    #return permutations_tested, transforms_tested, distances_and_sequences
 
 def search_permutationsOLD(perms, examples_to_learn_from, verbose):
     """Test all permutations of Transforms, exit if a 0 distance solution is found"""

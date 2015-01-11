@@ -26,6 +26,7 @@ To trial it:
 To add:
 
     * remove suffix words (needs to identify its own terms ahead of time)
+    * show how to use pandas to upload a column
     * normalise units ml/l, cm/mm/m, inches
     * lowercase/uppercase all
     * replace variant dashes to - (partially done with unidecode)
@@ -33,6 +34,8 @@ To add:
     * force some Transform ordering e.g. FTFY first only
     * can we specify types in the final version? e.g. transform to an int?
     * may be want to represent tokenised items as nodes so e.g. order could be messed with?
+    * prioritise Transforms so most likely to be useful are tried early
+
 
 Possibly useful libraries:
 
@@ -45,4 +48,6 @@ Possibly useful libraries:
     * http://code.activestate.com/recipes/52213/ soundex
     * http://pint.readthedocs.org/en/0.6/ unit conversion
 
+Examples:
 
+https://pawelmhm.github.io/python/pandas/2015/01/01/python-job-analytics.html analysing job data, notes that dates can be longform or 'just now' or 'yesterday' so good for mapping. 
