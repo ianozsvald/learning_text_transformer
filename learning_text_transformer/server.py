@@ -53,7 +53,7 @@ class Transform(restful.Resource):
             ts_raw = reqs['transforms']
             ts = serialisation.deserialise(ts_raw)
             transform_searcher = learner.get_transform_searcher()
-            result = transform_searcher.apply_transforms(ts, s)
+            result, transform_always_made_changes = transform_searcher.apply_transforms(ts, s)
             outputs.append(result)
 
         result = {'outputs': outputs}

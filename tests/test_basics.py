@@ -67,14 +67,14 @@ class TestSerialisation(unittest.TestCase):
         t3 = transforms.TransformStrip.factory("", "")
         ts = t1 + t2 + t3
         transform_searcher = learner.get_transform_searcher()
-        ts_output = transform_searcher.apply_transforms(ts, ITEM8[0])
+        ts_output, transform_always_made_changes = transform_searcher.apply_transforms(ts, ITEM8[0])
         self.assertEqual(ts_output, ITEM8[1])
 
         serialised_raw = self.serialiser.serialise(ts)
         self.assertGreater(len(serialised_raw), 0)  # assume we have some bytes
 
         deserialised_ts = self.serialiser.deserialise(serialised_raw)
-        deserialised_ts_output = transform_searcher.apply_transforms(deserialised_ts, ITEM8[0])
+        deserialised_ts_output, transform_always_made_changes = transform_searcher.apply_transforms(deserialised_ts, ITEM8[0])
         self.assertEqual(deserialised_ts_output, ITEM8[1])
 
 
@@ -95,7 +95,7 @@ class TestSearchAndSerialise(unittest.TestCase):
         ts = serialisation.deserialise(serialised_json)
 
         # test on the same input, confirm same output
-        result = transform_searcher.apply_transforms(ts, ITEM8[0])
+        result, transform_always_made_changes = transform_searcher.apply_transforms(ts, ITEM8[0])
         self.assertEqual(result, ITEM8[1])
 
 
