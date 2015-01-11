@@ -7,6 +7,12 @@
     $ python learning_text_transformer/learner3.py data/companies_simple.csv
 
 
+Deployment:
+
+    * git pull
+    * git checkout deploy
+    * ?? restart remote service
+
 Installation:
 
     * $ python setup.py develop
