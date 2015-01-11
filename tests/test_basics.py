@@ -66,7 +66,7 @@ class TestSerialisation(unittest.TestCase):
         t2 = transforms.TransformLowercase.factory("", "")
         t3 = transforms.TransformStrip.factory("", "")
         ts = t1 + t2 + t3
-        transform_searcher = learner.TransformSearcher()
+        transform_searcher = learner.get_transform_searcher()
         ts_output = transform_searcher.apply_transforms(ts, ITEM8[0])
         self.assertEqual(ts_output, ITEM8[1])
 
@@ -83,7 +83,7 @@ class TestSearchAndSerialise(unittest.TestCase):
     def test_search(self):
         # take a simple input/output sequence, search for pattern
         examples_to_learn_from = [ITEM8]
-        transform_searcher = learner.TransformSearcher()
+        transform_searcher = learner.get_transform_searcher()
         chosen_transformations, best_score = transform_searcher.search_and_find_best_sequence(examples_to_learn_from)
         self.assertEqual(best_score, 0.0)
 

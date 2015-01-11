@@ -15,7 +15,7 @@ class Test(unittest.TestCase):
         #ts = ts[:3]
         print(ts)
         examples_to_learn_from = [(input_strings[0], output_strings[0])]
-        transform_searcher = learner.TransformSearcher()
+        transform_searcher = learner.get_transform_searcher()
         chosen_transformations, best_score = transform_searcher.search_and_find_best_sequence(examples_to_learn_from)
         string_form_of_transforms = repr(chosen_transformations)
         self.assertIn("TransformRemoveWords", string_form_of_transforms)
