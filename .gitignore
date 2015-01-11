@@ -3,3 +3,4 @@ __pycache__
 old/
 learning_text_transformer.egg-info/
 *.pyc
+scratch_local
