@@ -34,7 +34,8 @@ class Learn(restful.Resource):
         self.check_inputs_or_abort(reqs)
         examples_to_learn_from = list(zip(reqs['inputs'], reqs['outputs']))
         if examples_to_learn_from:
-            chosen_transformations, best_score = learner.search_and_find_best_sequence(examples_to_learn_from)
+            transform_searcher = learner.TransformSearcher()
+            chosen_transformations, best_score = transform_searcher.search_and_find_best_sequence(examples_to_learn_from)
         else:
             chosen_transformations = []
         result = make_learn_result(chosen_transformations)
@@ -51,7 +52,8 @@ class Transform(restful.Resource):
         for s in inputs:
             ts_raw = reqs['transforms']
             ts = serialisation.deserialise(ts_raw)
-            result = learner.apply_transforms(ts, s)
+            transform_searcher = learner.TransformSearcher()
+            result = transform_searcher.apply_transforms(ts, s)
             outputs.append(result)
 
         result = {'outputs': outputs}

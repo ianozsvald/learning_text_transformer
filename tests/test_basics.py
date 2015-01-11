@@ -66,14 +66,15 @@ class TestSerialisation(unittest.TestCase):
         t2 = transforms.TransformLowercase.factory("", "")
         t3 = transforms.TransformStrip.factory("", "")
         ts = t1 + t2 + t3
-        ts_output = learner.apply_transforms(ts, ITEM8[0])
+        transform_searcher = learner.TransformSearcher()
+        ts_output = transform_searcher.apply_transforms(ts, ITEM8[0])
         self.assertEqual(ts_output, ITEM8[1])
 
         serialised_raw = self.serialiser.serialise(ts)
         self.assertGreater(len(serialised_raw), 0)  # assume we have some bytes
 
         deserialised_ts = self.serialiser.deserialise(serialised_raw)
-        deserialised_ts_output = learner.apply_transforms(deserialised_ts, ITEM8[0])
+        deserialised_ts_output = transform_searcher.apply_transforms(deserialised_ts, ITEM8[0])
         self.assertEqual(deserialised_ts_output, ITEM8[1])
 
 
@@ -82,7 +83,8 @@ class TestSearchAndSerialise(unittest.TestCase):
     def test_search(self):
         # take a simple input/output sequence, search for pattern
         examples_to_learn_from = [ITEM8]
-        chosen_transformations, best_score = learner.search_and_find_best_sequence(examples_to_learn_from)
+        transform_searcher = learner.TransformSearcher()
+        chosen_transformations, best_score = transform_searcher.search_and_find_best_sequence(examples_to_learn_from)
         self.assertEqual(best_score, 0.0)
 
         # serialise the result
@@ -93,7 +95,7 @@ class TestSearchAndSerialise(unittest.TestCase):
         ts = serialisation.deserialise(serialised_json)
 
         # test on the same input, confirm same output
-        result = learner.apply_transforms(ts, ITEM8[0])
+        result = transform_searcher.apply_transforms(ts, ITEM8[0])
         self.assertEqual(result, ITEM8[1])
 
 
