@@ -89,29 +89,18 @@ class TransformRemoveWords(Transform):
         self.terms = terms[0]
 
     @classmethod
-    def factory(cls, input_strings, output_strings):
-        cs = []
-        for term in ['Ltd', 'Limited']:
-            c = cls()
-            c.terms = term
-            cs.append(c)
-        return cs
-
-    #@classmethod
     # this version makes Transform based on lots of input possibilites
     # but those explodes the current possibility-space!
-    #def factory(cls, input_strings, output_strings):
-        #cs = []
-        #tokens = set()
-        #for input_string in input_strings:
-            #tokens.update([tok.strip() for tok in input_string.split()])
-        #print("Making ", len(tokens))
-        #1/0  # have to bail else it makes too many tokens!
-        #for token in tokens:
-            #c = cls()
-            #c.terms = token
-            #cs.append(c)
-        #return cs
+    def factory(cls, input_strings, output_strings):
+        cs = []
+        tokens = set()
+        for input_string in input_strings:
+            tokens.update([tok.strip() for tok in input_string.split()])
+        for token in tokens:
+            c = cls()
+            c.terms = token
+            cs.append(c)
+        return cs
 
     @classmethod
     def deserialise(cls, parameters):

@@ -36,7 +36,6 @@ class TransformSearcherBase(abc.ABC):
 
     def apply_transforms(self, ts, s):
         """Apply list of Transform objects to string s, return transformed string"""
-        s = ftfy.fix_text(s)  # fix any bad unicode
         for transform_nbr, t in enumerate(ts):
             s1 = t.apply(s)
             change_made = False
@@ -45,6 +44,14 @@ class TransformSearcherBase(abc.ABC):
             s = s1
         # signal if a change was made on the last transform
         return s, change_made
+
+    def fix_unicode(self, examples_to_learn_from):
+        fixed_examples_to_learn_from = []
+        for frm, to in examples_to_learn_from:
+            frm = ftfy.fix_text(frm)  # fix any bad unicode
+            fixed_examples_to_learn_from.append((frm, to))
+        return fixed_examples_to_learn_from
+
 
 class TransformSearcherClever(TransformSearcherBase):
     def __init__(self):
@@ -105,14 +112,16 @@ class TransformSearcherClever(TransformSearcherBase):
             output_strings.append(to)
 
         ts = transforms.get_transforms(input_strings, output_strings)
-        print("SEARCHING USING:")
-        for t in ts:
-            print(t)
+        if verbose:
+            print("SEARCHING USING:")
+            for t in ts:
+                print(t)
         cur_seq = []
         self.search_transforms(ts, cur_seq, examples_to_learn_from)
         return cur_seq, ts
 
     def search_and_find_best_sequence(self, examples_to_learn_from, verbose=False):
+        examples_to_learn_from = self.fix_unicode(examples_to_learn_from)
         input_strings, output_strings = [], []
         for frm, to in examples_to_learn_from:
             input_strings.append(frm)
@@ -120,19 +129,19 @@ class TransformSearcherClever(TransformSearcherBase):
 
         t1 = time.time()
         permutations_tested, transforms_tested = self.search_permutations(examples_to_learn_from, verbose)
-        if verbose:
-            print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
+        #if verbose:
+            #print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
 
-        t1 = time.time()
+        #t1 = time.time()
         #chosen_transformations, best_cost = self.get_best_transform_sequence(distances_and_sequences)
         chosen_transformations = self.best_cur_seq
         best_cost = self.best_distance
         if verbose:
             print("Took {0:.2f}s to find best sequence".format(time.time() - t1))
 
-        if verbose:
-            print()
-            pprint(distances_and_sequences)
+        #if verbose:
+            #print()
+            #pprint(distances_and_sequences)
 
         return chosen_transformations, best_cost
 

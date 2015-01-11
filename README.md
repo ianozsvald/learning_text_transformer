@@ -35,6 +35,7 @@ To add:
     * can we specify types in the final version? e.g. transform to an int?
     * may be want to represent tokenised items as nodes so e.g. order could be messed with?
     * prioritise Transforms so most likely to be useful are tried early
+    * only build RemoveWords transformer if words aren't in destination string! else operation is redundant for that example
 
 
 Possibly useful libraries:
