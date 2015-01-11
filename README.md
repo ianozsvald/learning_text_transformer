@@ -51,3 +51,9 @@ Possibly useful libraries:
 Examples:
 
 https://pawelmhm.github.io/python/pandas/2015/01/01/python-job-analytics.html analysing job data, notes that dates can be longform or 'just now' or 'yesterday' so good for mapping. 
+
+
+PROBLEM
+with new Clever search it doesn't explore all the options - why not?
+python learning_text_transformer/learner3.py data/companies_simple.csv 
+why not RemoveWords?

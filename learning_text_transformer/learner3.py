@@ -1,5 +1,6 @@
 from pprint import pprint
 import time
+import copy
 import abc
 from collections import namedtuple
 import csv
@@ -44,7 +45,6 @@ class TransformSearcherBase(abc.ABC):
             s = s1
         return s, transform_always_made_changes
 
-import copy
 class TransformSearcherClever(TransformSearcherBase):
     def __init__(self):
         self.nbr_evals = 0
@@ -59,11 +59,11 @@ class TransformSearcherClever(TransformSearcherBase):
         #if verbose:
             #print(transform_permutation)
         distances_per_example = []
-        transform_made_a_change = True
+        transform_made_a_change = False
         for example_nbr, (s1, s2) in enumerate(examples_to_learn_from):
             s1, transform_always_made_changes = self.apply_transforms(cur_seq, s1)
-            if not transform_always_made_changes:
-                transform_made_a_change = False
+            if transform_always_made_changes:
+                transform_made_a_change = True
             distance = 1.0 - Levenshtein.ratio(s1, s2)
             distances_per_example.append(distance)
 
@@ -72,6 +72,8 @@ class TransformSearcherClever(TransformSearcherBase):
         return average_distance_for_this_sequence, transform_made_a_change
 
     def search_transforms(self, ts, cur_seq, examples_to_learn_from):
+        # ts - current set of operators we need to search
+        # cur_seq - sequence of operators we're investigating
         #print("Searching using:", cur_seq)
         #best_distance, best_cur_seq
         keep_going = True
@@ -79,19 +81,21 @@ class TransformSearcherClever(TransformSearcherBase):
             if not keep_going:
                 continue
             t = ts.pop(idx)
+            print("Trying:", t, [str(trans) for trans in cur_seq])
             cur_seq.append(t)
             average_distance_for_this_sequence, transform_made_a_change = self.evaluate_transforms(cur_seq, examples_to_learn_from)
-            if self.best_distance is None or average_distance_for_this_sequence < self.best_distance:
-                self.best_distance = average_distance_for_this_sequence
-                self.best_cur_seq = copy.copy(cur_seq)
-                print("New best", self.best_distance, self.best_cur_seq, self.nbr_evals)
+            if transform_made_a_change:
+                if self.best_distance is None or average_distance_for_this_sequence < self.best_distance:
+                    self.best_distance = average_distance_for_this_sequence
+                    self.best_cur_seq = copy.copy(cur_seq)
+                    print("New best", self.best_distance, self.best_cur_seq, self.nbr_evals)
 
             if average_distance_for_this_sequence == 0:
                 keep_going = False
             if keep_going and transform_made_a_change:
                 keep_going = self.search_transforms(ts, cur_seq, examples_to_learn_from)
             #if not transform_made_a_change:
-                #print("Skipping...")
+                #print("Skipping...", ts[0], cur_seq)
             cur_seq.pop()
             ts.insert(idx, t)
         return keep_going
@@ -200,8 +204,8 @@ class TransformSearcherPermutations(TransformSearcherBase):
 
 
 def get_transform_searcher():
-    #return TransformSearcherClever()
-    return TransformSearcherPermutations()
+    return TransformSearcherClever()
+    #return TransformSearcherPermutations()
 
 
 if __name__ == "__main__":
