@@ -10,10 +10,7 @@ import Levenshtein
 import ftfy
 from itertools import permutations, chain
 from learning_text_transformer import transforms
-
-
-# TODO
-# do ftfy on incoming text, not during search
+from learning_text_transformer import config
 
 
 def load_examples(input_file):
@@ -54,15 +51,18 @@ class TransformSearcherBase(abc.ABC):
 
 
 class TransformSearcherClever(TransformSearcherBase):
-    def __init__(self):
+    def __init__(self, conf=None, verbose=False):
         self.nbr_evals = 0
         self.best_distance = None
         self.best_cur_seq = None
+        self.conf = conf
+        self.verbose = verbose
 
     def evaluate_transforms(self, cur_seq, examples_to_learn_from):
         self.nbr_evals += 1
-        if self.nbr_evals % 1000 == 0:
-            print("nbr_evals", self.nbr_evals, cur_seq)
+        if self.verbose:
+            if self.nbr_evals % 1000 == 0:
+                print("nbr_evals", self.nbr_evals, cur_seq)
         #verbose = False
         #if verbose:
             #print(transform_permutation)
@@ -91,7 +91,8 @@ class TransformSearcherClever(TransformSearcherBase):
                 if self.best_distance is None or average_distance_for_this_sequence < self.best_distance:
                     self.best_distance = average_distance_for_this_sequence
                     self.best_cur_seq = copy.copy(cur_seq)
-                    print("New best", self.best_distance, self.best_cur_seq, self.nbr_evals)
+                    if self.verbose:
+                        print("New best", self.best_distance, self.best_cur_seq, self.nbr_evals)
 
             # if we've found a perfect solution then stop trying
             if average_distance_for_this_sequence == 0:
@@ -146,72 +147,8 @@ class TransformSearcherClever(TransformSearcherBase):
         return chosen_transformations, best_cost
 
 
-
-
-class TransformSearcherPermutations(TransformSearcherBase):
-    def make_permutations(self, examples_to_learn_from):
-        """Make 1 to full-length list of all permutations"""
-        input_strings, output_strings = [], []
-        for frm, to in examples_to_learn_from:
-            input_strings.append(frm)
-            output_strings.append(to)
-        list_of_transforms = transforms.get_transforms(input_strings, output_strings)
-        perms = []
-        l2 = list(chain(permutations(list_of_transforms, rng)) for rng in range(1, len(list_of_transforms)+1))
-        for item in l2:
-            perms += item
-        return perms
-
-    def search_permutations(self, perms, examples_to_learn_from, verbose):
-        """Test all permutations of Transforms, exit if a 0 distance solution is found"""
-        distances_and_sequences = []
-        permutations_tested = 0
-        transforms_tested = 0
-        for transform_permutation in perms:
-            if verbose:
-                print(transform_permutation)
-            distances_per_example = []
-            for example_nbr, (s1, s2) in enumerate(examples_to_learn_from):
-                s1, _ = self.apply_transforms(transform_permutation, s1)
-                transforms_tested += len(transform_permutation)
-                distance = 1.0 - Levenshtein.ratio(s1, s2)
-                distances_per_example.append(distance)
-
-            average_distance_for_this_sequence = statistics.mean(distances_per_example)
-            if verbose:
-                print(distances_per_example, average_distance_for_this_sequence)
-            distances_and_sequences.append(ScoredTransformation(transform_permutation, average_distance_for_this_sequence))
-            permutations_tested += 1
-            if average_distance_for_this_sequence == 0:
-                break
-        return permutations_tested, transforms_tested, distances_and_sequences
-
-    def search_and_find_best_sequence(self, examples_to_learn_from, verbose=False):
-        t1 = time.time()
-        perms = self.make_permutations(examples_to_learn_from)
-        if verbose:
-            print("Took {0:.2f}s to make all permutations".format(time.time() - t1))
-            print("Using {} permutations".format(len(perms)))
-
-        permutations_tested, transforms_tested, distances_and_sequences = self.search_permutations(perms, examples_to_learn_from, verbose)
-        if verbose:
-            print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
-
-        t1 = time.time()
-        chosen_transformations, best_cost = self.get_best_transform_sequence(distances_and_sequences)
-        if verbose:
-            print("Took {0:.2f}s to find best sequence".format(time.time() - t1))
-
-        if verbose:
-            print()
-            pprint(distances_and_sequences)
-
-        return chosen_transformations, best_cost
-
-
-def get_transform_searcher():
-    return TransformSearcherClever()
-    #return TransformSearcherPermutations()
+def get_transform_searcher(conf=None):
+    return TransformSearcherClever(conf)
 
 
 if __name__ == "__main__":
@@ -220,11 +157,13 @@ if __name__ == "__main__":
     parser.add_argument('--verbose', default=False, action="store_true")
     args = parser.parse_args()
 
+    conf = config.get('dev')
+
     verbose = args.verbose
     examples_to_learn_from = load_examples(args.input_file)
     print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
 
-    transform_searcher = get_transform_searcher()
+    transform_searcher = get_transform_searcher(conf, verbose)
     chosen_transformations, best_cost = transform_searcher.search_and_find_best_sequence(examples_to_learn_from, verbose)
 
     print("====")

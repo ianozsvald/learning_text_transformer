@@ -12,6 +12,7 @@ Installation:
     * $ python setup.py develop
     * $ nosetests
     * $ py.test -s -v
+    * py.test --cov learning_text_transformer --cov-report html
 
 To trial it:
 
