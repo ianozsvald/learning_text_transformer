@@ -1,7 +1,5 @@
 import abc
-import json
 import re
-import ftfy
 import unidecode
 from learning_text_transformer import spoken_word_to_number
 
@@ -117,11 +115,6 @@ class TransformRemoveWords(Transform):
 
     def __str__(self):
         return self.__class__.__name__ + "(" + repr(self.terms) + ")"
-
-
-#class TransformFTFY(Transform):
-    #def apply(self, s):
-        #return ftfy.fix_text(s)
 
 
 class TransformUnidecode(Transform):
