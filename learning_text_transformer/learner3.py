@@ -50,12 +50,13 @@ class TransformSearcherBase(abc.ABC):
 
 
 class TransformSearcherClever(TransformSearcherBase):
-    def __init__(self, conf=None, verbose=False):
+    def __init__(self, conf=None, verbose=False, timeout=2):
         self.nbr_evals = 0
         self.best_distance = None
         self.best_cur_seq = None
         self.conf = conf
         self.verbose = verbose
+        self.timeout = timeout  # seconds for max search time
 
     def evaluate_transforms(self, cur_seq, examples_to_learn_from):
         self.nbr_evals += 1
@@ -78,6 +79,9 @@ class TransformSearcherClever(TransformSearcherBase):
         # ts - current set of operators we need to search
         # cur_seq - sequence of operators we're investigating
         keep_going = True
+        if time.time() > self.finish_search_by:
+            # if we've exceeded our allowed search time we must exit
+            keep_going = False
         for idx in range(len(ts)):
             t = ts.pop(idx)
             cur_seq.append(t)
@@ -102,6 +106,9 @@ class TransformSearcherClever(TransformSearcherBase):
 
     def search_permutations(self, examples_to_learn_from, verbose):
         self.nbr_evals = 0
+        # set a maximum timeout
+        self.finish_search_by = time.time() + self.timeout
+
         input_strings, output_strings = [], []
         for frm, to in examples_to_learn_from:
             input_strings.append(frm)
@@ -134,8 +141,8 @@ class TransformSearcherClever(TransformSearcherBase):
         return chosen_transformations, best_cost
 
 
-def get_transform_searcher(conf=None, verbose=False):
-    return TransformSearcherClever(conf, verbose)
+def get_transform_searcher(conf=None, verbose=False, timeout=2):
+    return TransformSearcherClever(conf, verbose=verbose, timeout=timeout)
 
 
 if __name__ == "__main__":
