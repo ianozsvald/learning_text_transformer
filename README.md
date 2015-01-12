@@ -32,17 +32,22 @@ To trial it:
 
 To add:
 
-    * remove suffix words (needs to identify its own terms ahead of time)
-    * show how to use pandas to upload a column
-    * normalise units ml/l, cm/mm/m, inches
+    * HOW SLOW IS IT ON FULL SEARCH?
+
     * lowercase/uppercase all
     * replace variant dashes to - (partially done with unidecode)
+    * memoize each transform's apply
 
-    * force some Transform ordering e.g. FTFY first only
-    * can we specify types in the final version? e.g. transform to an int?
-    * may be want to represent tokenised items as nodes so e.g. order could be messed with?
+    * show how to use pandas to upload a column
+    * normalise units ml/l, cm/mm/m, inches
     * prioritise Transforms so most likely to be useful are tried early
     * only build RemoveWords transformer if words aren't in destination string! else operation is redundant for that example
+
+Future ideas?
+ 
+    * can we specify types in the final version? e.g. transform to an int?
+    * if we specify the output type (e.g. int) we can use L2 norm as a distance metric on numeric outputs (maybe, but then how to score the text transforms inbetween?)
+    * may be want to represent tokenised items as nodes so e.g. order could be messed with?
 
 
 Possibly useful libraries:
@@ -51,17 +56,12 @@ Possibly useful libraries:
     * http://stackoverflow.com/questions/776286/given-a-string-generate-a-regex-that-can-parse-similar-strings
     * http://regex.inginf.units.it/ generate regexs automatically
     * https://pypi.python.org/pypi/num2words convert words to numbers (in various languages)
-    * https://github.com/ghewgill/text2num/blob/master/text2num.py convert words to numbers
     * https://pypi.python.org/pypi/inflect  Correctly generate plurals, singular nouns, ordinals, indefinite articles; convert numbers to words.
     * http://code.activestate.com/recipes/52213/ soundex
     * http://pint.readthedocs.org/en/0.6/ unit conversion
+    * https://github.com/sunlightlabs/jellyfish  approximate/phonetic string matching inc Lev, Soundex, Metaphone
 
 Examples:
 
 https://pawelmhm.github.io/python/pandas/2015/01/01/python-job-analytics.html analysing job data, notes that dates can be longform or 'just now' or 'yesterday' so good for mapping. 
 
-
-PROBLEM
-with new Clever search it doesn't explore all the options - why not?
-python learning_text_transformer/learner3.py data/companies_simple.csv 
-why not RemoveWords?

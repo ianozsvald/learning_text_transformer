@@ -163,7 +163,7 @@ if __name__ == "__main__":
     examples_to_learn_from = load_examples(args.input_file)
     print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
 
-    transform_searcher = get_transform_searcher(conf, verbose)
+    transform_searcher = get_transform_searcher(conf)
     chosen_transformations, best_cost = transform_searcher.search_and_find_best_sequence(examples_to_learn_from, verbose)
 
     print("====")
