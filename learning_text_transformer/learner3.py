@@ -1,4 +1,3 @@
-from pprint import pprint
 import time
 import copy
 import abc
@@ -8,7 +7,6 @@ import argparse
 import statistics
 import Levenshtein
 import ftfy
-from itertools import permutations, chain
 from learning_text_transformer import transforms
 from learning_text_transformer import config
 
@@ -23,6 +21,7 @@ def load_examples(input_file):
     return examples_to_learn_from
 
 ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'average_distance'])
+
 
 class TransformSearcherBase(abc.ABC):
     def get_best_transform_sequence(self, distances_and_sequences):
@@ -61,11 +60,8 @@ class TransformSearcherClever(TransformSearcherBase):
     def evaluate_transforms(self, cur_seq, examples_to_learn_from):
         self.nbr_evals += 1
         if self.verbose:
-            if self.nbr_evals % 1000 == 0:
-                print("nbr_evals", self.nbr_evals, cur_seq)
-        #verbose = False
-        #if verbose:
-            #print(transform_permutation)
+            if self.nbr_evals % 10000 == 0:
+                print("...nbr_evals", self.nbr_evals, cur_seq)
         distances_per_example = []
         transform_made_a_change = False
         for example_nbr, (s1, s2) in enumerate(examples_to_learn_from):
@@ -76,7 +72,6 @@ class TransformSearcherClever(TransformSearcherBase):
             distances_per_example.append(distance)
 
         average_distance_for_this_sequence = statistics.mean(distances_per_example)
-        #print("evaluation:", cur_seq, average_distance_for_this_sequence, nbr_evals)
         return average_distance_for_this_sequence, transform_made_a_change
 
     def search_transforms(self, ts, cur_seq, examples_to_learn_from):
@@ -130,25 +125,17 @@ class TransformSearcherClever(TransformSearcherBase):
 
         t1 = time.time()
         permutations_tested, transforms_tested = self.search_permutations(examples_to_learn_from, verbose)
-        #if verbose:
-            #print("Tested {} of {} permutations using {} transforms".format(permutations_tested, len(perms), transforms_tested))
 
-        #t1 = time.time()
-        #chosen_transformations, best_cost = self.get_best_transform_sequence(distances_and_sequences)
         chosen_transformations = self.best_cur_seq
         best_cost = self.best_distance
         if verbose:
             print("Took {0:.2f}s to find best sequence".format(time.time() - t1))
 
-        #if verbose:
-            #print()
-            #pprint(distances_and_sequences)
-
         return chosen_transformations, best_cost
 
 
-def get_transform_searcher(conf=None):
-    return TransformSearcherClever(conf)
+def get_transform_searcher(conf=None, verbose=False):
+    return TransformSearcherClever(conf, verbose)
 
 
 if __name__ == "__main__":
@@ -163,7 +150,7 @@ if __name__ == "__main__":
     examples_to_learn_from = load_examples(args.input_file)
     print("Loaded {} items from {}".format(len(examples_to_learn_from), args.input_file))
 
-    transform_searcher = get_transform_searcher(conf)
+    transform_searcher = get_transform_searcher(conf, verbose)
     chosen_transformations, best_cost = transform_searcher.search_and_find_best_sequence(examples_to_learn_from, verbose)
 
     print("====")
