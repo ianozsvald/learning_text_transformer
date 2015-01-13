@@ -1,6 +1,7 @@
 __pycache__
 .ropeproject
 old/
+logs/
 learning_text_transformer.egg-info/
 *.pyc
 scratch_local

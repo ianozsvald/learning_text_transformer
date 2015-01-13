@@ -24,23 +24,25 @@ class ConfDev(object):
     name = "dev"
 
     def __init__(self):
-        pass
+        self.log_filename = "/home/ian/workspace/projects/nlp_tools/learning_text_transformer/logs/stuff.log"
 
 
-class ConfDevWindows(object):
+class ConfDeploy(object):
     """Example 2nd configuration, a development scenario on Windows"""
-    name = "dev_windows"
+    name = "deploy"
 
     def __init__(self):
-        pass
+        self.log_filename = "/home/ianozsvald/webapps/api_annotate_io/learning_text_transformer/logs/stuff.log"
 
-configurations = [ConfDev, ConfDevWindows]
+configurations = [ConfDev, ConfDeploy]
 
 
 def get(configuration=None):
     """Return a configuration based on name or environment variable"""
     if configuration is None:
         configuration = os.getenv(CONFIG_ENV_VAR)
+    if configuration is None:
+        configuration = "dev"  # default
 
     # look through the available configurations, find the
     # match and instantiate it
