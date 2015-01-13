@@ -28,7 +28,7 @@ class ConfDev(object):
 
 
 class ConfDeploy(object):
-    """Example 2nd configuration, a development scenario on Windows"""
+    """Deployment config on WebFaction"""
     name = "deploy"
 
     def __init__(self):
@@ -42,7 +42,12 @@ def get(configuration=None):
     if configuration is None:
         configuration = os.getenv(CONFIG_ENV_VAR)
     if configuration is None:
-        configuration = "dev"  # default
+        if os.getenv('USER') == "ianozsvald":
+            configuration = "deploy"
+        elif os.getenv('USER') == "ian":
+            configuration = "dev"
+    #if configuration is None:
+        #configuration = "dev"  # default
 
     # look through the available configurations, find the
     # match and instantiate it

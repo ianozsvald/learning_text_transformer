@@ -10,7 +10,7 @@ from learning_text_transformer import config
 
 app = Flask(__name__)
 api = restful.Api(app)
-conf = config.get('deploy')
+conf = config.get()
 
 
 class Logging(object):
