@@ -10,12 +10,13 @@ from learning_text_transformer import config
 
 app = Flask(__name__)
 api = restful.Api(app)
-conf = config.get()
+conf = config.get('deploy')
 
 
 class Logging(object):
     def __init__(self, conf):
         self.conf = conf
+        self.write('__init__', '')
 
     def log_learn_entry(self, examples_to_learn_from):
         self.write(self.log_learn_entry.__name__, examples_to_learn_from)
