@@ -70,3 +70,7 @@ Examples:
 
 https://pawelmhm.github.io/python/pandas/2015/01/01/python-job-analytics.html analysing job data, notes that dates can be longform or 'just now' or 'yesterday' so good for mapping. 
 
+Calvin's request
+"No examples to hand at present but the problem is really in detecting .tld and .tl.dd style domains. There is in theory a defined set but they change a lot. Then add in .wordpress.com, .blogspot.com etc which all have a set of unique sites under them. From the other end, loose www. api. etc but keep drive.google, groceries.tesco etc.
+
+In essence, we want to group by the highest domain part that contains a single brand. We then want a tree of their interesting sub domains. "
