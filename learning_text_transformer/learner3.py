@@ -141,7 +141,7 @@ class TransformSearcherClever(TransformSearcherBase):
         return chosen_transformations, best_cost
 
 
-def get_transform_searcher(conf=None, verbose=False, timeout=2):
+def get_transform_searcher(conf=None, verbose=False, timeout=5):
     return TransformSearcherClever(conf, verbose=verbose, timeout=timeout)
 
 
