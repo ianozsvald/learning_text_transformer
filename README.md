@@ -10,8 +10,8 @@
 Deployment:
 
     * cd /home/ianozsvald/webapps/api_annotate_io/learning_text_transformer
-    * git pull
     * git checkout deploy
+    * git pull
     * ../apache2/bin/stop
     * ../apache2/bin/start
     * curl api.annotate.io  # confirm we get a JSON response
