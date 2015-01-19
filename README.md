@@ -37,15 +37,12 @@ To trial it:
 
 To add:
 
-    * HOW SLOW IS IT ON FULL SEARCH? >1hr if the problem can't be solved and no sign of stopping! maybe I need to restrict it to a max search time (e.g. 10 secs), then it returns the best transform it found in that time?
-
-    * memoize each transform's apply
     * lowercase/uppercase all
     * replace variant dashes to - (partially done with unidecode)
 
     * show how to use pandas to upload a column
     * normalise units ml/l, cm/mm/m, inches
-    * prioritise Transforms so most likely to be useful are tried early
+    * prioritise Transforms so most likely to be useful are tried early, e.g. use evidence of nbr of times it makes a change to prioritise it?
     * only build RemoveWords transformer if words aren't in destination string! else operation is redundant for that example
 
 Future ideas?

@@ -11,6 +11,13 @@ from learning_text_transformer import transforms
 from learning_text_transformer import config
 
 
+# DUMMY DECORATOR FOR PROFILING
+def profile(target):
+    def wrapper(*args, **kwargs):
+        return target(*args, **kwargs)
+    return wrapper
+
+
 def load_examples(input_file):
     """Load data that we'll learn from"""
     with open(input_file) as f:
@@ -58,6 +65,7 @@ class TransformSearcherClever(TransformSearcherBase):
         self.verbose = verbose
         self.timeout = timeout  # seconds for max search time
 
+    @profile
     def evaluate_transforms(self, cur_seq, examples_to_learn_from):
         self.nbr_evals += 1
         if self.verbose:
@@ -65,6 +73,7 @@ class TransformSearcherClever(TransformSearcherBase):
                 print("...nbr_evals", self.nbr_evals, cur_seq)
         distances_per_example = []
         transform_made_a_change = False
+        average_distance_for_this_sequence = None
         for example_nbr, (s1, s2) in enumerate(examples_to_learn_from):
             s1, change_made = self.apply_transforms(cur_seq, s1)
             if change_made:
@@ -72,9 +81,11 @@ class TransformSearcherClever(TransformSearcherBase):
             distance = 1.0 - Levenshtein.ratio(s1, s2)
             distances_per_example.append(distance)
 
-        average_distance_for_this_sequence = statistics.mean(distances_per_example)
+        if transform_made_a_change:
+            average_distance_for_this_sequence = statistics.mean(distances_per_example)
         return average_distance_for_this_sequence, transform_made_a_change
 
+    @profile
     def search_transforms(self, ts, cur_seq, examples_to_learn_from):
         # ts - current set of operators we need to search
         # cur_seq - sequence of operators we're investigating
@@ -95,9 +106,9 @@ class TransformSearcherClever(TransformSearcherBase):
                     if self.verbose:
                         print("New best", self.best_distance, self.best_cur_seq, self.nbr_evals)
 
-            # if we've found a perfect solution then stop trying
-            if average_distance_for_this_sequence == 0:
-                keep_going = False
+                # if we've found a perfect solution then stop trying
+                if average_distance_for_this_sequence == 0:
+                    keep_going = False
             # recursively explore this tree if the latest Transform made a
             # change to at least 1 example
             if keep_going and transform_made_a_change:
@@ -106,6 +117,7 @@ class TransformSearcherClever(TransformSearcherBase):
             ts.insert(idx, t)
         return keep_going
 
+    @profile
     def search_permutations(self, examples_to_learn_from, verbose):
         self.nbr_evals = 0
         # set a maximum timeout
@@ -125,6 +137,7 @@ class TransformSearcherClever(TransformSearcherBase):
         self.search_transforms(ts, cur_seq, examples_to_learn_from)
         return cur_seq, ts
 
+    @profile
     def search_and_find_best_sequence(self, examples_to_learn_from, verbose=False):
         examples_to_learn_from = self.fix_unicode(examples_to_learn_from)
         input_strings, output_strings = [], []

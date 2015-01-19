@@ -6,6 +6,8 @@ if __name__ == "__main__":
     nbr_iterations = 10000
     input_string = "this is an input string sóciété"
     output_string = ""
+    #input_string = "SchÃ¶n"
+    #output_string = "schön"
     list_of_transforms = transforms.get_transforms([input_string], [output_string])
 
     results = []
@@ -19,6 +21,10 @@ if __name__ == "__main__":
     print("Time cost (s) per {} iterations".format(nbr_iterations))
     for transform, timed_result in results:
         print("{: 2.4f} {}".format(timed_result, transform))
+
+# Worst offender 20150119 (now solved):
+# 0.3726 TransformExtractNumber()
+#
 
 # Result on 30122014
 #Time cost (s) per 10000 iterations

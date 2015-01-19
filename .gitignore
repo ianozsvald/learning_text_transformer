@@ -6,3 +6,4 @@ learning_text_transformer.egg-info/
 *.pyc
 scratch_local
 log.log
+*.lprof

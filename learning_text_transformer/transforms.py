@@ -42,10 +42,17 @@ class Transform(abc.ABC):
 
 
 class TransformExtractNumber(Transform):
+    nbrs = set([str(n) for n in range(10)])
+
     def apply(self, s):
-        result = re.findall("\D*(\d+).*", s)
-        if result:
-            return result[0]
+        check = False
+        for c in s:
+            if c in self.nbrs:
+                check = True
+        if check:
+            result = re.findall("\D*(\d+).*", s)
+            if result:
+                return result[0]
         return s  # don't transform as a default
 
 
