@@ -82,6 +82,8 @@ class TransformSearcherClever(TransformSearcherBase):
         if time.time() > self.finish_search_by:
             # if we've exceeded our allowed search time we must exit
             keep_going = False
+            if self.verbose:
+                print("TIMED OUT!", examples_to_learn_from)
         for idx in range(len(ts)):
             t = ts.pop(idx)
             cur_seq.append(t)
@@ -141,7 +143,7 @@ class TransformSearcherClever(TransformSearcherBase):
         return chosen_transformations, best_cost
 
 
-def get_transform_searcher(conf=None, verbose=False, timeout=5):
+def get_transform_searcher(conf=None, verbose=False, timeout=30):
     return TransformSearcherClever(conf, verbose=verbose, timeout=timeout)
 
 
