@@ -45,6 +45,12 @@ To add:
     * prioritise Transforms so most likely to be useful are tried early, e.g. use evidence of nbr of times it makes a change to prioritise it?
     * only build RemoveWords transformer if words aren't in destination string! else operation is redundant for that example
 
+Problems:
+
+    * search is slow - mean is expensive!
+    * s1, change_made = self.apply_transforms(cur_seq, s1)
+    * mean was expensive, something that needs checking
+
 Future ideas?
  
     * can we specify types in the final version? e.g. transform to an int?
