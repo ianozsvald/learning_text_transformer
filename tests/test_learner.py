@@ -41,3 +41,16 @@ class Test(unittest.TestCase):
         chosen_transformations, best_score = transform_searcher.search_and_find_best_sequence(examples_to_learn_from)
         print(chosen_transformations)
         self.assertLess(best_score, 1)
+
+
+    def test_check_no_transforms_means_noop(self):
+        input_strings = ["x"]
+        output_strings = ["x"]
+        ts = transforms.get_transforms(input_strings, output_strings)
+        print(ts)
+        examples_to_learn_from = [(input_strings[0], output_strings[0])]
+        transform_searcher = learner.get_transform_searcher()
+        chosen_transformations, best_score = transform_searcher.search_and_find_best_sequence(examples_to_learn_from)
+        print(chosen_transformations, best_score)
+        self.assertEqual(len(chosen_transformations), 0)
+        self.assertEqual(best_score, 0)

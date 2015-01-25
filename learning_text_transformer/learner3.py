@@ -39,6 +39,7 @@ class TransformSearcherBase(abc.ABC):
 
     def apply_transforms(self, ts, s):
         """Apply list of Transform objects to string s, return transformed string"""
+        change_made = False
         for transform_nbr, t in enumerate(ts):
             s1 = t.apply(s)
             change_made = False
@@ -66,7 +67,7 @@ class TransformSearcherClever(TransformSearcherBase):
         self.timeout = timeout  # seconds for max search time
 
     @profile
-    def evaluate_transforms(self, cur_seq, examples_to_learn_from):
+    def evaluate_transforms(self, cur_seq, examples_to_learn_from, force_evaluation=False):
         self.nbr_evals += 1
         if self.verbose:
             if self.nbr_evals % 10000 == 0:
@@ -81,7 +82,7 @@ class TransformSearcherClever(TransformSearcherBase):
             distance = 1.0 - Levenshtein.ratio(s1, s2)
             distances_per_example.append(distance)
 
-        if transform_made_a_change:
+        if transform_made_a_change or force_evaluation:
             average_distance_for_this_sequence = statistics.mean(distances_per_example)
         return average_distance_for_this_sequence, transform_made_a_change
 
@@ -89,6 +90,8 @@ class TransformSearcherClever(TransformSearcherBase):
     def search_transforms(self, ts, cur_seq, examples_to_learn_from):
         # ts - current set of operators we need to search
         # cur_seq - sequence of operators we're investigating
+        assert self.best_distance is not None
+        assert self.best_cur_seq is not None
         keep_going = True
         if time.time() > self.finish_search_by:
             # if we've exceeded our allowed search time we must exit
@@ -100,7 +103,7 @@ class TransformSearcherClever(TransformSearcherBase):
             cur_seq.append(t)
             average_distance_for_this_sequence, transform_made_a_change = self.evaluate_transforms(cur_seq, examples_to_learn_from)
             if transform_made_a_change:
-                if self.best_distance is None or average_distance_for_this_sequence < self.best_distance:
+                if average_distance_for_this_sequence < self.best_distance:
                     self.best_distance = average_distance_for_this_sequence
                     self.best_cur_seq = copy.copy(cur_seq)
                     if self.verbose:
@@ -134,6 +137,8 @@ class TransformSearcherClever(TransformSearcherBase):
             for t in ts:
                 print(t)
         cur_seq = []
+        self.best_distance, _ = self.evaluate_transforms(cur_seq, examples_to_learn_from, force_evaluation=True)
+        self.best_cur_seq = []
         self.search_transforms(ts, cur_seq, examples_to_learn_from)
         return cur_seq, ts
 
