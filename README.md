@@ -12,6 +12,7 @@ Deployment:
     * cd /home/ianozsvald/webapps/api_annotate_io/learning_text_transformer
     * git checkout deploy
     * git pull
+    * ssh ianozsvald.com
     * ../apache2/bin/stop
     * ../apache2/bin/start
     * curl api.annotate.io  # confirm we get a JSON response
@@ -47,8 +48,6 @@ To add:
 
 Problems:
 
-    * search is slow - mean is expensive!
-    * s1, change_made = self.apply_transforms(cur_seq, s1)
     * mean was expensive, something that needs checking
     * levenshtein.ratio didn't do a score for very distance strings, so no error space! i switched to raw edit distance
 
