@@ -79,7 +79,8 @@ class TransformSearcherClever(TransformSearcherBase):
             s1, change_made = self.apply_transforms(cur_seq, s1)
             if change_made:
                 transform_made_a_change = True
-            distance = 1.0 - Levenshtein.ratio(s1, s2)
+            #distance = 1.0 - Levenshtein.ratio(s1, s2)
+            distance = Levenshtein.distance(s1, s2)
             distances_per_example.append(distance)
 
         if transform_made_a_change or force_evaluation:
@@ -98,23 +99,27 @@ class TransformSearcherClever(TransformSearcherBase):
             keep_going = False
             if self.verbose:
                 print("TIMED OUT!", examples_to_learn_from)
+        # before we try new moves, get a score for the moves we had before
+        average_distance_cur_seq, _ = self.evaluate_transforms(cur_seq, examples_to_learn_from, force_evaluation=True)
         for idx in range(len(ts)):
             t = ts.pop(idx)
             cur_seq.append(t)
             average_distance_for_this_sequence, transform_made_a_change = self.evaluate_transforms(cur_seq, examples_to_learn_from)
+            new_move_improves_the_score = False
             if transform_made_a_change:
+                new_move_improves_the_score = average_distance_for_this_sequence < average_distance_cur_seq
                 if average_distance_for_this_sequence < self.best_distance:
                     self.best_distance = average_distance_for_this_sequence
                     self.best_cur_seq = copy.copy(cur_seq)
                     if self.verbose:
-                        print("New best", self.best_distance, self.best_cur_seq, self.nbr_evals)
+                        print("New best", self.best_distance, self.best_cur_seq, self.nbr_evals, average_distance_cur_seq)
 
                 # if we've found a perfect solution then stop trying
                 if average_distance_for_this_sequence == 0:
                     keep_going = False
             # recursively explore this tree if the latest Transform made a
             # change to at least 1 example
-            if keep_going and transform_made_a_change:
+            if keep_going and transform_made_a_change and new_move_improves_the_score:
                 keep_going = self.search_transforms(ts, cur_seq, examples_to_learn_from)
             cur_seq.pop()
             ts.insert(idx, t)
