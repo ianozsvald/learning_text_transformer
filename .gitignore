@@ -7,3 +7,5 @@ learning_text_transformer.egg-info/
 scratch_local
 log.log
 *.lprof
+htmlcov
+.coverage
