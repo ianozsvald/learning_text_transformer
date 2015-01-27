@@ -31,11 +31,11 @@ ScoredTransformation = namedtuple('ScoredTransformation', ['transformations', 'a
 
 
 class TransformSearcherBase(abc.ABC):
-    def get_best_transform_sequence(self, distances_and_sequences):
-        distances_and_sequences.sort(key=lambda x: x.average_distance)
-        chosen_transformations = distances_and_sequences[0].transformations
-        best_cost = distances_and_sequences[0].average_distance
-        return chosen_transformations, best_cost
+    #def get_best_transform_sequence(self, distances_and_sequences):
+        #distances_and_sequences.sort(key=lambda x: x.average_distance)
+        #chosen_transformations = distances_and_sequences[0].transformations
+        #best_cost = distances_and_sequences[0].average_distance
+        #return chosen_transformations, best_cost
 
     def apply_transforms(self, ts, s):
         """Apply list of Transform objects to string s, return transformed string"""
