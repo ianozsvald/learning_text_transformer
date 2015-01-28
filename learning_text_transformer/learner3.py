@@ -66,6 +66,9 @@ class TransformSearcherClever(TransformSearcherBase):
         self.verbose = verbose
         self.timeout = timeout  # seconds for max search time
 
+    def calculate_distance(self, s1, s2):
+        return Levenshtein.distance(s1, s2)
+
     @profile
     def evaluate_transforms(self, cur_seq, examples_to_learn_from, force_evaluation=False):
         self.nbr_evals += 1
@@ -80,7 +83,8 @@ class TransformSearcherClever(TransformSearcherBase):
             if change_made:
                 transform_made_a_change = True
             #distance = 1.0 - Levenshtein.ratio(s1, s2)
-            distance = Levenshtein.distance(s1, s2)
+            #distance = Levenshtein.distance(s1, s2)
+            distance = self.calculate_distance(s1, s2)
             distances_per_example.append(distance)
 
         if transform_made_a_change or force_evaluation:
@@ -189,3 +193,10 @@ if __name__ == "__main__":
     print("Final sequence of transforms (cost={}):".format(best_cost))
     for chosen_transformation in chosen_transformations:
         print(chosen_transformation)
+
+    print("\nTransformed versions of the input sequences:")
+    for frm, to in examples_to_learn_from[1:]:
+        transformed_frm, _ = transform_searcher.apply_transforms(chosen_transformations, frm)
+        print("'{}'->'{}' compared to '{}' has distance '{}'".format(frm, transformed_frm, to, transform_searcher.calculate_distance(transformed_frm, to)))
+
+    #print(transform_searcher.evaluate_transforms(chosen_transformations, examples_to_learn_from, force_evaluation=True))

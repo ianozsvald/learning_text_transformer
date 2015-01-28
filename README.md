@@ -48,6 +48,7 @@ To add:
 
 Problems:
 
+    * ATTRACTIVE SALARY PACKAGE -> "000" due to expandk not checking for nbr!
     * mean was expensive, something that needs checking
     * levenshtein.ratio didn't do a score for very distance strings, so no error space! i switched to raw edit distance
 

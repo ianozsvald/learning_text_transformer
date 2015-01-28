@@ -50,9 +50,14 @@ class TransformExtractNumber(Transform):
             if c in self.nbrs:
                 check = True
         if check:
-            result = re.findall("\D*(\d+).*", s)
-            if result:
-                return result[0]
+            #result = re.findall("\D*(\d+).*", s)
+            #if result:
+                #return result[0]
+            result = re.findall("\d+", s)
+            return " ".join(result)
+        else:
+            return ""  # no numbers to extract
+
         return s  # don't transform as a default
 
 
