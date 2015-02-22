@@ -9,6 +9,7 @@ EMPTY_STRING = ""
 # most items are (inp, expected_result) and t.apply(inp)->res
 ITEM1 = ("30000.00", "30000")
 ITEM2 = ("30K", "30000")
+ITEM2_1 = ("30k", "30000")
 ITEM3 = ("blah 40 blah", "40")
 ITEM4 = ("forty four", "44")
 ITEM5 = ("thirty-three thousand", "33000")
@@ -148,13 +149,23 @@ class TestCase1(unittest.TestCase):
         res = t.apply(ITEM1[0])
         self.assertEqual(res, ITEM1[1])
 
-    def test2(self):
+    def test_expandk(self):
         t = transforms.TransformExpandK()
         res = t.apply(EMPTY_STRING)
         self.assertEqual(res, EMPTY_STRING)
 
         res = t.apply(ITEM2[0])
         self.assertEqual(res, ITEM2[1])
+        res = t.apply(ITEM2_1[0])
+        self.assertEqual(res, ITEM2_1[1])
+
+        test_string = "a string WITHKINIT"
+        res = t.apply(test_string)
+        self.assertEqual(res, test_string)
+
+        test_string = "a string withkinit"
+        res = t.apply(test_string)
+        self.assertEqual(res, test_string)
 
     def test3(self):
         t = transforms.TransformExtractNumber()

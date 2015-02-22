@@ -62,8 +62,16 @@ class TransformExtractNumber(Transform):
 
 
 class TransformExpandK(Transform):
+    """Expand a k or K into 000 if proceeded by an integer"""
     def apply(self, s):
-        return s.replace('K', '000')
+        match_char = None
+        if 'K' in s:
+            match_char = "K"
+        elif 'k' in s:
+            match_char = "k"
+        if match_char:
+            s = re.sub('(\d+{})'.format(match_char), lambda x: x.group(0).replace(match_char, '000'), s)
+        return s
 
 
 class TransformRemoveDot00(Transform):
