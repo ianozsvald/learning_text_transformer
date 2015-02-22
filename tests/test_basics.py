@@ -1,6 +1,5 @@
 """Some tests"""
 import unittest
-import json
 from learning_text_transformer import transforms
 from learning_text_transformer import learner3 as learner
 
@@ -11,6 +10,9 @@ ITEM1 = ("30000.00", "30000")
 ITEM2 = ("30K", "30000")
 ITEM2_1 = ("30k", "30000")
 ITEM3 = ("blah 40 blah", "40")
+ITEM3_1 = ("blah 40,000 blah", "40000")
+ITEM3_2 = ("blah 40,000 50000 nothing", "40000 50000")
+ITEM3_3 = ("blah 40,000,000 blah", "40000000")
 ITEM4 = ("forty four", "44")
 ITEM5 = ("thirty-three thousand", "33000")
 ITEM6 = ("schÃ¶n", "schön")
@@ -174,6 +176,20 @@ class TestCase1(unittest.TestCase):
 
         res = t.apply(ITEM3[0])
         self.assertEqual(res, ITEM3[1])
+
+        # same for comma separated number
+        res = t.apply(ITEM3_1[0])
+        self.assertEqual(res, ITEM3_1[1])
+
+        # same for comma separated number
+        res = t.apply(ITEM3_2[0])
+        self.assertEqual(res, ITEM3_2[1])
+
+        # try a string without numbers but with commas
+        test_string = ", blah,blah"
+        res = t.apply(test_string)
+        self.assertEqual(res, "")
+
 
     def test4(self):
         t = transforms.TransformSpokenWordsToNumbers()
