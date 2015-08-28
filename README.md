@@ -1,18 +1,35 @@
 
 
-Status: first open release (Aug 2015), the docs need improving
+# Status
 
-# Installation:
+First open release (Aug 2015), the docs need improving
 
-    * $ python setup.py develop
-    * $ nosetests
-    * $ py.test -s -v
-    * py.test --cov learning_text_transformer --cov-report html
+# Goal
+
+This learns to transform "the data that I have" into "the data that I want", you provide pairs of data (the "input" and the desired "output") and it tries to figure out a sequence of text transformations that'll solve this challenge.
+
+The algorithm searches a large of possible transformations, it isn't guaranteed to find a solution as the search space can be crazy-big. This needs improving...
+
+The current demo prints the sequence to screen but doesn't let you use it. The online version (http://annotate.io) has a demo that takes the generated transformation sequence and lets you use it to process your own data. The local demo will be updated just as soon as someone nags me.
+
+*What I'd like* is for folk to tell me what they need - your use cases (with data!) and how this could save you time, that'll give me good reason to plug on with better implementations.
 
 
 # Demo:
 
 ```
+    # salaries_simple.csv
+    From,To
+    "£34866 P.A.","34866"
+    "£48260 P.A.","48260"
+    "60000.00","60000"
+    "60K","60000"
+    "45000","45000"
+    "£60K","60000"
+    "45000 + BONUS","45000"
+    "thirty three thousand","33000"
+    
+
     $ python learning_text_transformer/learner3.py data/salaries_simple.csv 
     Loaded 8 items from data/salaries_simple.csv
     ====
@@ -40,6 +57,8 @@ Status: first open release (Aug 2015), the docs need improving
 
 # Demo as a server:
 
+The core code is hosted using Flask at http://annotate.io, this lets you upload a JSON dictionary of "input" and "output" items, it'll then return an object representing the transformation sequence. You can upload this with new "input" data and it'll transform it for you.
+
 ```
     $ python learning_text_transformer/server.py
     >>> import requests
@@ -51,6 +70,19 @@ Status: first open release (Aug 2015), the docs need improving
     {'transforms': [['TransformRemoveWords', {'terms': 'Ltd'}],
                     ['TransformStrip', {}]]}
 ```  
+
+# Installation:
+
+    * $ python setup.py develop
+    * $ py.test
+    
+    # For debugging
+    * $ py.test -s -v # shows stdout and verbose info 
+
+    # Adding coverage and generating a report in ./html
+    * $ py.test --cov learning_text_transformer --cov-report html
+
+
 
 # To add:
 
