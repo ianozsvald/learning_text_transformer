@@ -1,46 +1,64 @@
 
-    $ python learning_text_transformer/learner3.py data/salaries_simple.csv 
-    Loaded 7 items from data/salaries_simple.csv
-    ====
-    Final sequence of transforms: (<transforms.TransformExpandK object at 0x7f93d13d5eb8>, <transforms.TransformExtractNumber object at 0x7f93d13d5f60>)
 
-    $ python learning_text_transformer/learner3.py data/companies_simple.csv
+Status: first open release (Aug 2015), the docs need improving
 
-
-Deployment:
-
-    * cd /home/ianozsvald/webapps/api_annotate_io/learning_text_transformer
-    * git checkout deploy
-    * git pull
-    * ssh ianozsvald.com
-    * ../apache2/bin/stop
-    * ../apache2/bin/start
-    * curl api.annotate.io  # confirm we get a JSON response
-    * /home/ianozsvald/logs/user/access_api_annotate_io.log  # access log
-    * /home/ianozsvald/logs/user/error_api_annotate_io.log  # error log
-
-Installation:
+# Installation:
 
     * $ python setup.py develop
     * $ nosetests
     * $ py.test -s -v
     * py.test --cov learning_text_transformer --cov-report html
 
-To trial it:
 
+# Demo:
+
+```
+    $ python learning_text_transformer/learner3.py data/salaries_simple.csv 
+    Loaded 8 items from data/salaries_simple.csv
+    ====
+    Final sequence of transforms (cost=0.0):
+    TransformExpandK()
+    TransformRemoveDot00()
+    TransformRemoveWords('+')
+    TransformRemoveWords('P.A.')
+    TransformRemoveWords('BONUS')
+    TransformSpokenWordsToNumbers()
+    TransformExtractNumber()
+
+    Transformed versions of the input sequences:
+    '£48260 P.A.'->'48260' compared to '48260' has distance '0'
+    '60000.00'->'60000' compared to '60000' has distance '0'
+    '60K'->'60000' compared to '60000' has distance '0'
+    '45000'->'45000' compared to '45000' has distance '0'
+    '£60K'->'60000' compared to '60000' has distance '0'
+    '45000 + BONUS'->'45000' compared to '45000' has distance '0'
+    'thirty three thousand'->'33000' compared to '33000' has distance '0'
+```
+
+
+
+
+# Demo as a server:
+
+```
     $ python learning_text_transformer/server.py
     >>> import requests
     >>> import json
-    >>> query={'from':['this Ltd', 'this blah'], 'to':['this', 'this blah']}
-    >>> URL="http://api.annotate.io/learn"
+    >>> query={'inputs':['this Ltd', 'this blah'], 'outputs':['this', 'this blah']}
+    >>> # URL="http://api.annotate.io/learn" # use this for the online demo
     >>> URL="http://localhost:5000/learn"
     >>> requests.post(URL, data=json.dumps(query), headers={'Content-Type': 'application/json'}).json()
+    {'transforms': [['TransformRemoveWords', {'terms': 'Ltd'}],
+                    ['TransformStrip', {}]]}
+```  
 
-To add:
+# To add:
 
     * lowercase/uppercase all
     * replace variant dashes to - (partially done with unidecode)
+    * make it faster! switch to e.g. A* algorithm
 
+# Possibilities...
     * show how to use pandas to upload a column
     * normalise units ml/l, cm/mm/m, inches
     * prioritise Transforms so most likely to be useful are tried early, e.g. use evidence of nbr of times it makes a change to prioritise it?
@@ -74,7 +92,3 @@ Examples:
 
 https://pawelmhm.github.io/python/pandas/2015/01/01/python-job-analytics.html analysing job data, notes that dates can be longform or 'just now' or 'yesterday' so good for mapping. 
 
-Calvin's request
-"No examples to hand at present but the problem is really in detecting .tld and .tl.dd style domains. There is in theory a defined set but they change a lot. Then add in .wordpress.com, .blogspot.com etc which all have a set of unique sites under them. From the other end, loose www. api. etc but keep drive.google, groceries.tesco etc.
-
-In essence, we want to group by the highest domain part that contains a single brand. We then want a tree of their interesting sub domains. "
