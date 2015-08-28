@@ -2,7 +2,7 @@
 
 # Status
 
-First open release (Aug 2015), the docs need improving
+First open release (Aug 2015), the docs need improving. Python 3.4+ only (I belive, it can probably work with 'legacy' Python 2 easily enough but you'll have to figure that out).
 
 # License
 
@@ -17,7 +17,6 @@ The algorithm searches a large of possible transformations, it isn't guaranteed 
 The current demo prints the sequence to screen but doesn't let you use it. The online version (http://annotate.io) has a demo that takes the generated transformation sequence and lets you use it to process your own data. The local demo will be updated just as soon as someone nags me.
 
 *What I'd like* is for folk to tell me what they need - your use cases (with data!) and how this could save you time, that'll give me good reason to plug on with better implementations.
-
 
 # Demo:
 
