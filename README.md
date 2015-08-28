@@ -91,9 +91,9 @@ The core code is hosted using Flask at http://annotate.io, this lets you upload 
 
     Pretty printed:
         Previously unseen input:                Annotate's output:
-                        RBS PLC ->                            rbs
+                           RBS PLC ->                            rbs
         Royal Bank of Scotland PLC ->         royal bank of scotland
-                        Lancôme ->                        lancome
+                           Lancôme ->                        lancome
                     Estée Lauder   ->                   estee lauder
 
     The transforms that are used in this demo include: Lowercase, Strip white-space, Convert unicode to ASCII, Strip token (to remove 'Ltd'), Fix badly encoded unicode
