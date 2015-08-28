@@ -4,6 +4,10 @@
 
 First open release (Aug 2015), the docs need improving
 
+# License
+
+MIT (see license file)
+
 # Goal
 
 This learns to transform "the data that I have" into "the data that I want", you provide pairs of data (the "input" and the desired "output") and it tries to figure out a sequence of text transformations that'll solve this challenge.
