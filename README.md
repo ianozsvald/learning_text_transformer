@@ -71,6 +71,35 @@ The core code is hosted using Flask at http://annotate.io, this lets you upload 
                     ['TransformStrip', {}]]}
 ```  
 
+# Further demo (via online version):
+
+```
+    $ python demo/annotateio_demo.py  # run the demo, it talks to annotate.io
+
+    Annotate.io demo  to show how we learn a transformation sequence for data cleaning
+
+    Training phase - we use `inputs` to learn a transformation to get to the desired `outputs`:
+    inputs: ['Accenture PLC', 'Accenture Europe', 'Société Générale', 'SociÃ©tÃ© GÃ©nÃ©rale']
+    outputs: ['accenture', 'accenture europe', 'societe generale', 'societe generale']
+    Calling Annotate.io...
+    Training phase complete, now we have a `transforms` code
+
+    Data cleaning phase - we use the `transforms` that we've learned on previously unseen `inputs` items to generate new `outputs`):
+    inputs: ['RBS PLC', 'Royal Bank of Scotland PLC', 'Lancôme', ' Estée Lauder  ']
+    We now have a transformed result:
+    outputs: ['rbs', 'royal bank of scotland', 'lancome', 'estee lauder']
+
+    Pretty printed:
+        Previously unseen input:                Annotate's output:
+                        RBS PLC ->                            rbs
+        Royal Bank of Scotland PLC ->         royal bank of scotland
+                        Lancôme ->                        lancome
+                    Estée Lauder   ->                   estee lauder
+
+    The transforms that are used in this demo include: Lowercase, Strip white-space, Convert unicode to ASCII, Strip token (to remove 'Ltd'), Fix badly encoded unicode
+
+```
+
 # Installation:
 
     * $ python setup.py develop
