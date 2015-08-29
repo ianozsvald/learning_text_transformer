@@ -33,19 +33,19 @@ The current demo prints the sequence to screen but doesn't let you use it. The o
     "thirty three thousand","33000"
     
 
-    $ python learning_text_transformer/learner3.py data/salaries_simple.csv 
+    $ python learning_text_transformer/transformer.py data/salaries_simple.csv 
     Loaded 8 items from data/salaries_simple.csv
-    ====
     Final sequence of transforms (cost=0.0):
     TransformExpandK()
     TransformRemoveDot00()
-    TransformRemoveWords('+')
     TransformRemoveWords('P.A.')
+    TransformRemoveWords('+')
     TransformRemoveWords('BONUS')
     TransformSpokenWordsToNumbers()
     TransformExtractNumber()
 
     Transformed versions of the input sequences:
+    '£34866 P.A.'->'34866' compared to '34866' has distance '0'
     '£48260 P.A.'->'48260' compared to '48260' has distance '0'
     '60000.00'->'60000' compared to '60000' has distance '0'
     '60K'->'60000' compared to '60000' has distance '0'

@@ -1,3 +1,5 @@
+##!/usr/bin/env python
+"""Search for sequences of transforms that solve a task"""
 import time
 import copy
 import abc
