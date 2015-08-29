@@ -14,8 +14,6 @@ This learns to transform "the data that I have" into "the data that I want", you
 
 The algorithm searches a large of possible transformations, it isn't guaranteed to find a solution as the search space can be crazy-big. This needs improving...
 
-The current demo prints the sequence to screen but doesn't let you use it. The online version (http://annotate.io) has a demo that takes the generated transformation sequence and lets you use it to process your own data. The local demo will be updated just as soon as someone nags me.
-
 *What I'd like* is for folk to tell me what they need - your use cases (with data!) and how this could save you time, that'll give me good reason to plug on with better implementations.
 
 # Demo:
